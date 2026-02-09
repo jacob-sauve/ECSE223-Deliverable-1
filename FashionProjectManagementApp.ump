@@ -56,14 +56,18 @@ class ClothingItem {
   enum Size {S, M, L, XL}
 }
 
-class LimitedItem {
-  isA ClothingItem;
+class LimitedStatus {
+  abstract;
   Date startDate;
   Date endDate;
 }
 
+class LimitedItem {
+  isA LimitedStatus;
+}
+
 class SeasonalItem {
-  isA LimitedItem;
+  isA LimitedStatus;
   Season season;
   enum Season {Winter, Spring, Summer, Fall}
 }
@@ -84,4 +88,5 @@ association {
 * Order -- * ClothingItem requestedItems;
 * Order assignedOrders -- 1 Employee itemGatherer;
 * Shipment -- * ClothingItem receivedItems;
+0..1 LimitedStatus -- 1 ClothingItem limitedItem;
 }

@@ -3,6 +3,7 @@
 
 
 import java.util.*;
+import java.sql.Date;
 
 // line 50 "FashionProjectManagementApp.ump"
 public class ClothingItem
@@ -35,6 +36,7 @@ public class ClothingItem
   private Inventory inventory;
   private List<Order> orders;
   private List<Shipment> shipments;
+  private LimitedStatus limitedStatus;
 
   //------------------------
   // CONSTRUCTOR
@@ -61,10 +63,6 @@ public class ClothingItem
     }
     orders = new ArrayList<Order>();
     shipments = new ArrayList<Shipment>();
-    if (aPointValue<1||aPointValue>5)
-    {
-      throw new RuntimeException("Please provide a valid pointValue [pointValue>=1&&pointValue<=5]");
-    }
     if (aPointValue<1||aPointValue>5)
     {
       throw new RuntimeException("Please provide a valid pointValue [pointValue>=1&&pointValue<=5]");
@@ -115,11 +113,8 @@ public class ClothingItem
     boolean wasSet = false;
     if (aPointValue>=1&&aPointValue<=5)
     {
-    if (aPointValue>=1&&aPointValue<=5)
-    {
     pointValue = aPointValue;
     wasSet = true;
-    }
     }
     return wasSet;
   }
@@ -222,6 +217,17 @@ public class ClothingItem
   {
     int index = shipments.indexOf(aShipment);
     return index;
+  }
+  /* Code from template association_GetOne */
+  public LimitedStatus getLimitedStatus()
+  {
+    return limitedStatus;
+  }
+
+  public boolean hasLimitedStatus()
+  {
+    boolean has = limitedStatus != null;
+    return has;
   }
   /* Code from template association_SetOneToMany */
   public boolean setCart(Cart aCart)
@@ -425,6 +431,33 @@ public class ClothingItem
     }
     return wasAdded;
   }
+  /* Code from template association_SetOptionalOneToOne */
+  public boolean setLimitedStatus(LimitedStatus aNewLimitedStatus)
+  {
+    boolean wasSet = false;
+    if (limitedStatus != null && !limitedStatus.equals(aNewLimitedStatus) && equals(limitedStatus.getLimitedItem()))
+    {
+      //Unable to setLimitedStatus, as existing limitedStatus would become an orphan
+      return wasSet;
+    }
+
+    limitedStatus = aNewLimitedStatus;
+    ClothingItem anOldLimitedItem = aNewLimitedStatus != null ? aNewLimitedStatus.getLimitedItem() : null;
+
+    if (!this.equals(anOldLimitedItem))
+    {
+      if (anOldLimitedItem != null)
+      {
+        anOldLimitedItem.limitedStatus = null;
+      }
+      if (limitedStatus != null)
+      {
+        limitedStatus.setLimitedItem(this);
+      }
+    }
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -453,6 +486,12 @@ public class ClothingItem
     {
       aShipment.removeReceivedItem(this);
     }
+    LimitedStatus existingLimitedStatus = limitedStatus;
+    limitedStatus = null;
+    if (existingLimitedStatus != null)
+    {
+      existingLimitedStatus.delete();
+    }
   }
 
 
@@ -464,6 +503,7 @@ public class ClothingItem
             "pointValue" + ":" + getPointValue()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null");
+            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "limitedStatus = "+(getLimitedStatus()!=null?Integer.toHexString(System.identityHashCode(getLimitedStatus())):"null");
   }
 }
