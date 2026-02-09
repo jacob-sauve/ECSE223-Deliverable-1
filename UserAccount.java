@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 18 "FashionProjectManagementApp.ump"
+// line 21 "FashionProjectManagementApp.ump"
 public abstract class UserAccount
 {
 
@@ -27,15 +27,19 @@ public abstract class UserAccount
   //UserAccount Associations
   private FashionStoreManagementApp app;
 
+  //Helper Variables
+  private boolean canSetUsername;
+
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public UserAccount(String aUsername, String aPassword, String aName, int aPhoneNumber, FashionStoreManagementApp aApp)
+  public UserAccount(String aUsername, String aPassword, FashionStoreManagementApp aApp)
   {
+    canSetUsername = true;
     password = aPassword;
-    name = aName;
-    phoneNumber = aPhoneNumber;
+    name = null;
+    phoneNumber = 0;
     if (!setUsername(aUsername))
     {
       throw new RuntimeException("Cannot create due to duplicate username. See http://manual.umple.org?RE003ViolationofUniqueness.html");
@@ -50,10 +54,11 @@ public abstract class UserAccount
   //------------------------
   // INTERFACE
   //------------------------
-
+  /* Code from template attribute_SetImmutable */
   public boolean setUsername(String aUsername)
   {
     boolean wasSet = false;
+    if (!canSetUsername) { return false; }
     String anOldUsername = getUsername();
     if (anOldUsername != null && anOldUsername.equals(aUsername)) {
       return true;
@@ -61,6 +66,7 @@ public abstract class UserAccount
     if (hasWithUsername(aUsername)) {
       return wasSet;
     }
+    canSetUsername = false;
     username = aUsername;
     wasSet = true;
     if (anOldUsername != null) {

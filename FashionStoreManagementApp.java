@@ -183,9 +183,9 @@ public class FashionStoreManagementApp
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Shipment addShipment(Date aDeliveryDate)
+  public Shipment addShipment(Date aDateOrdered)
   {
-    return new Shipment(aDeliveryDate, this);
+    return new Shipment(aDateOrdered, this);
   }
 
   public boolean addShipment(Shipment aShipment)

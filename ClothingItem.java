@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 45 "FashionProjectManagementApp.ump"
+// line 50 "FashionProjectManagementApp.ump"
 public class ClothingItem
 {
 
@@ -28,22 +28,23 @@ public class ClothingItem
   private String name;
   private double price;
   private Size size;
-  private int points;
+  private int pointValue;
 
   //ClothingItem Associations
   private Cart cart;
   private Inventory inventory;
-  private Order order;
+  private List<Order> orders;
+  private List<Shipment> shipments;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ClothingItem(String aName, double aPrice, Size aSize, int aPoints, Cart aCart, Inventory aInventory, Order aOrder)
+  public ClothingItem(String aName, double aPrice, Size aSize, int aPointValue, Cart aCart, Inventory aInventory)
   {
     price = aPrice;
     size = aSize;
-    points = aPoints;
+    pointValue = aPointValue;
     if (!setName(aName))
     {
       throw new RuntimeException("Cannot create due to duplicate name. See http://manual.umple.org?RE003ViolationofUniqueness.html");
@@ -56,20 +57,17 @@ public class ClothingItem
     boolean didAddInventory = setInventory(aInventory);
     if (!didAddInventory)
     {
-      throw new RuntimeException("Unable to create item due to inventory. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create stockedItem due to inventory. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    boolean didAddOrder = setOrder(aOrder);
-    if (!didAddOrder)
+    orders = new ArrayList<Order>();
+    shipments = new ArrayList<Shipment>();
+    if (aPointValue<1||aPointValue>5)
     {
-      throw new RuntimeException("Unable to create item due to order. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Please provide a valid pointValue [pointValue>=1&&pointValue<=5]");
     }
-    if (aPoints<1||aPoints>5)
+    if (aPointValue<1||aPointValue>5)
     {
-      throw new RuntimeException("Please provide a valid points [points>=1&&points<=5]");
-    }
-    if (aPoints<1||aPoints>5)
-    {
-      throw new RuntimeException("Please provide a valid points [points>=1&&points<=5]");
+      throw new RuntimeException("Please provide a valid pointValue [pointValue>=1&&pointValue<=5]");
     }
   }
 
@@ -112,14 +110,14 @@ public class ClothingItem
     return wasSet;
   }
 
-  public boolean setPoints(int aPoints)
+  public boolean setPointValue(int aPointValue)
   {
     boolean wasSet = false;
-    if (aPoints>=1&&aPoints<=5)
+    if (aPointValue>=1&&aPointValue<=5)
     {
-    if (aPoints>=1&&aPoints<=5)
+    if (aPointValue>=1&&aPointValue<=5)
     {
-    points = aPoints;
+    pointValue = aPointValue;
     wasSet = true;
     }
     }
@@ -151,9 +149,9 @@ public class ClothingItem
     return size;
   }
 
-  public int getPoints()
+  public int getPointValue()
   {
-    return points;
+    return pointValue;
   }
   /* Code from template association_GetOne */
   public Cart getCart()
@@ -165,10 +163,65 @@ public class ClothingItem
   {
     return inventory;
   }
-  /* Code from template association_GetOne */
-  public Order getOrder()
+  /* Code from template association_GetMany */
+  public Order getOrder(int index)
   {
-    return order;
+    Order aOrder = orders.get(index);
+    return aOrder;
+  }
+
+  public List<Order> getOrders()
+  {
+    List<Order> newOrders = Collections.unmodifiableList(orders);
+    return newOrders;
+  }
+
+  public int numberOfOrders()
+  {
+    int number = orders.size();
+    return number;
+  }
+
+  public boolean hasOrders()
+  {
+    boolean has = orders.size() > 0;
+    return has;
+  }
+
+  public int indexOfOrder(Order aOrder)
+  {
+    int index = orders.indexOf(aOrder);
+    return index;
+  }
+  /* Code from template association_GetMany */
+  public Shipment getShipment(int index)
+  {
+    Shipment aShipment = shipments.get(index);
+    return aShipment;
+  }
+
+  public List<Shipment> getShipments()
+  {
+    List<Shipment> newShipments = Collections.unmodifiableList(shipments);
+    return newShipments;
+  }
+
+  public int numberOfShipments()
+  {
+    int number = shipments.size();
+    return number;
+  }
+
+  public boolean hasShipments()
+  {
+    boolean has = shipments.size() > 0;
+    return has;
+  }
+
+  public int indexOfShipment(Shipment aShipment)
+  {
+    int index = shipments.indexOf(aShipment);
+    return index;
   }
   /* Code from template association_SetOneToMany */
   public boolean setCart(Cart aCart)
@@ -202,30 +255,175 @@ public class ClothingItem
     inventory = aInventory;
     if (existingInventory != null && !existingInventory.equals(aInventory))
     {
-      existingInventory.removeItem(this);
+      existingInventory.removeStockedItem(this);
     }
-    inventory.addItem(this);
+    inventory.addStockedItem(this);
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setOrder(Order aOrder)
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfOrders()
   {
-    boolean wasSet = false;
-    if (aOrder == null)
+    return 0;
+  }
+  /* Code from template association_AddManyToManyMethod */
+  public boolean addOrder(Order aOrder)
+  {
+    boolean wasAdded = false;
+    if (orders.contains(aOrder)) { return false; }
+    orders.add(aOrder);
+    if (aOrder.indexOfRequestedItem(this) != -1)
     {
-      return wasSet;
+      wasAdded = true;
+    }
+    else
+    {
+      wasAdded = aOrder.addRequestedItem(this);
+      if (!wasAdded)
+      {
+        orders.remove(aOrder);
+      }
+    }
+    return wasAdded;
+  }
+  /* Code from template association_RemoveMany */
+  public boolean removeOrder(Order aOrder)
+  {
+    boolean wasRemoved = false;
+    if (!orders.contains(aOrder))
+    {
+      return wasRemoved;
     }
 
-    Order existingOrder = order;
-    order = aOrder;
-    if (existingOrder != null && !existingOrder.equals(aOrder))
+    int oldIndex = orders.indexOf(aOrder);
+    orders.remove(oldIndex);
+    if (aOrder.indexOfRequestedItem(this) == -1)
     {
-      existingOrder.removeItem(this);
+      wasRemoved = true;
     }
-    order.addItem(this);
-    wasSet = true;
-    return wasSet;
+    else
+    {
+      wasRemoved = aOrder.removeRequestedItem(this);
+      if (!wasRemoved)
+      {
+        orders.add(oldIndex,aOrder);
+      }
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addOrderAt(Order aOrder, int index)
+  {  
+    boolean wasAdded = false;
+    if(addOrder(aOrder))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
+      orders.remove(aOrder);
+      orders.add(index, aOrder);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveOrderAt(Order aOrder, int index)
+  {
+    boolean wasAdded = false;
+    if(orders.contains(aOrder))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
+      orders.remove(aOrder);
+      orders.add(index, aOrder);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addOrderAt(aOrder, index);
+    }
+    return wasAdded;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfShipments()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToManyMethod */
+  public boolean addShipment(Shipment aShipment)
+  {
+    boolean wasAdded = false;
+    if (shipments.contains(aShipment)) { return false; }
+    shipments.add(aShipment);
+    if (aShipment.indexOfReceivedItem(this) != -1)
+    {
+      wasAdded = true;
+    }
+    else
+    {
+      wasAdded = aShipment.addReceivedItem(this);
+      if (!wasAdded)
+      {
+        shipments.remove(aShipment);
+      }
+    }
+    return wasAdded;
+  }
+  /* Code from template association_RemoveMany */
+  public boolean removeShipment(Shipment aShipment)
+  {
+    boolean wasRemoved = false;
+    if (!shipments.contains(aShipment))
+    {
+      return wasRemoved;
+    }
+
+    int oldIndex = shipments.indexOf(aShipment);
+    shipments.remove(oldIndex);
+    if (aShipment.indexOfReceivedItem(this) == -1)
+    {
+      wasRemoved = true;
+    }
+    else
+    {
+      wasRemoved = aShipment.removeReceivedItem(this);
+      if (!wasRemoved)
+      {
+        shipments.add(oldIndex,aShipment);
+      }
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addShipmentAt(Shipment aShipment, int index)
+  {  
+    boolean wasAdded = false;
+    if(addShipment(aShipment))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfShipments()) { index = numberOfShipments() - 1; }
+      shipments.remove(aShipment);
+      shipments.add(index, aShipment);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveShipmentAt(Shipment aShipment, int index)
+  {
+    boolean wasAdded = false;
+    if(shipments.contains(aShipment))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfShipments()) { index = numberOfShipments() - 1; }
+      shipments.remove(aShipment);
+      shipments.add(index, aShipment);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addShipmentAt(aShipment, index);
+    }
+    return wasAdded;
   }
 
   public void delete()
@@ -241,13 +439,19 @@ public class ClothingItem
     this.inventory = null;
     if(placeholderInventory != null)
     {
-      placeholderInventory.removeItem(this);
+      placeholderInventory.removeStockedItem(this);
     }
-    Order placeholderOrder = order;
-    this.order = null;
-    if(placeholderOrder != null)
+    ArrayList<Order> copyOfOrders = new ArrayList<Order>(orders);
+    orders.clear();
+    for(Order aOrder : copyOfOrders)
     {
-      placeholderOrder.removeItem(this);
+      aOrder.removeRequestedItem(this);
+    }
+    ArrayList<Shipment> copyOfShipments = new ArrayList<Shipment>(shipments);
+    shipments.clear();
+    for(Shipment aShipment : copyOfShipments)
+    {
+      aShipment.removeReceivedItem(this);
     }
   }
 
@@ -257,10 +461,9 @@ public class ClothingItem
     return super.toString() + "["+
             "name" + ":" + getName()+ "," +
             "price" + ":" + getPrice()+ "," +
-            "points" + ":" + getPoints()+ "]" + System.getProperties().getProperty("line.separator") +
+            "pointValue" + ":" + getPointValue()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "order = "+(getOrder()!=null?Integer.toHexString(System.identityHashCode(getOrder())):"null");
+            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null");
   }
 }

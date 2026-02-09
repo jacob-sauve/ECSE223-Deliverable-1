@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 66 "FashionProjectManagementApp.ump"
+// line 71 "FashionProjectManagementApp.ump"
 public class Inventory
 {
 
@@ -14,7 +14,7 @@ public class Inventory
 
   //Inventory Associations
   private FashionStoreManagementApp app;
-  private List<ClothingItem> items;
+  private List<ClothingItem> stockedItems;
 
   //------------------------
   // CONSTRUCTOR
@@ -27,13 +27,13 @@ public class Inventory
       throw new RuntimeException("Unable to create Inventory due to aApp. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     app = aApp;
-    items = new ArrayList<ClothingItem>();
+    stockedItems = new ArrayList<ClothingItem>();
   }
 
   public Inventory()
   {
     app = new FashionStoreManagementApp(this);
-    items = new ArrayList<ClothingItem>();
+    stockedItems = new ArrayList<ClothingItem>();
   }
 
   //------------------------
@@ -45,104 +45,104 @@ public class Inventory
     return app;
   }
   /* Code from template association_GetMany */
-  public ClothingItem getItem(int index)
+  public ClothingItem getStockedItem(int index)
   {
-    ClothingItem aItem = items.get(index);
-    return aItem;
+    ClothingItem aStockedItem = stockedItems.get(index);
+    return aStockedItem;
   }
 
-  public List<ClothingItem> getItems()
+  public List<ClothingItem> getStockedItems()
   {
-    List<ClothingItem> newItems = Collections.unmodifiableList(items);
-    return newItems;
+    List<ClothingItem> newStockedItems = Collections.unmodifiableList(stockedItems);
+    return newStockedItems;
   }
 
-  public int numberOfItems()
+  public int numberOfStockedItems()
   {
-    int number = items.size();
+    int number = stockedItems.size();
     return number;
   }
 
-  public boolean hasItems()
+  public boolean hasStockedItems()
   {
-    boolean has = items.size() > 0;
+    boolean has = stockedItems.size() > 0;
     return has;
   }
 
-  public int indexOfItem(ClothingItem aItem)
+  public int indexOfStockedItem(ClothingItem aStockedItem)
   {
-    int index = items.indexOf(aItem);
+    int index = stockedItems.indexOf(aStockedItem);
     return index;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfItems()
+  public static int minimumNumberOfStockedItems()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ClothingItem addItem(String aName, double aPrice, ClothingItem.Size aSize, int aPoints, Cart aCart, Order aOrder)
+  public ClothingItem addStockedItem(String aName, double aPrice, ClothingItem.Size aSize, int aPointValue, Cart aCart)
   {
-    return new ClothingItem(aName, aPrice, aSize, aPoints, aCart, this, aOrder);
+    return new ClothingItem(aName, aPrice, aSize, aPointValue, aCart, this);
   }
 
-  public boolean addItem(ClothingItem aItem)
+  public boolean addStockedItem(ClothingItem aStockedItem)
   {
     boolean wasAdded = false;
-    if (items.contains(aItem)) { return false; }
-    Inventory existingInventory = aItem.getInventory();
+    if (stockedItems.contains(aStockedItem)) { return false; }
+    Inventory existingInventory = aStockedItem.getInventory();
     boolean isNewInventory = existingInventory != null && !this.equals(existingInventory);
     if (isNewInventory)
     {
-      aItem.setInventory(this);
+      aStockedItem.setInventory(this);
     }
     else
     {
-      items.add(aItem);
+      stockedItems.add(aStockedItem);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeItem(ClothingItem aItem)
+  public boolean removeStockedItem(ClothingItem aStockedItem)
   {
     boolean wasRemoved = false;
-    //Unable to remove aItem, as it must always have a inventory
-    if (!this.equals(aItem.getInventory()))
+    //Unable to remove aStockedItem, as it must always have a inventory
+    if (!this.equals(aStockedItem.getInventory()))
     {
-      items.remove(aItem);
+      stockedItems.remove(aStockedItem);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addItemAt(ClothingItem aItem, int index)
+  public boolean addStockedItemAt(ClothingItem aStockedItem, int index)
   {  
     boolean wasAdded = false;
-    if(addItem(aItem))
+    if(addStockedItem(aStockedItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfItems()) { index = numberOfItems() - 1; }
-      items.remove(aItem);
-      items.add(index, aItem);
+      if(index > numberOfStockedItems()) { index = numberOfStockedItems() - 1; }
+      stockedItems.remove(aStockedItem);
+      stockedItems.add(index, aStockedItem);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveItemAt(ClothingItem aItem, int index)
+  public boolean addOrMoveStockedItemAt(ClothingItem aStockedItem, int index)
   {
     boolean wasAdded = false;
-    if(items.contains(aItem))
+    if(stockedItems.contains(aStockedItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfItems()) { index = numberOfItems() - 1; }
-      items.remove(aItem);
-      items.add(index, aItem);
+      if(index > numberOfStockedItems()) { index = numberOfStockedItems() - 1; }
+      stockedItems.remove(aStockedItem);
+      stockedItems.add(index, aStockedItem);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addItemAt(aItem, index);
+      wasAdded = addStockedItemAt(aStockedItem, index);
     }
     return wasAdded;
   }
@@ -155,10 +155,10 @@ public class Inventory
     {
       existingApp.delete();
     }
-    for(int i=items.size(); i > 0; i--)
+    for(int i=stockedItems.size(); i > 0; i--)
     {
-      ClothingItem aItem = items.get(i - 1);
-      aItem.delete();
+      ClothingItem aStockedItem = stockedItems.get(i - 1);
+      aStockedItem.delete();
     }
   }
 

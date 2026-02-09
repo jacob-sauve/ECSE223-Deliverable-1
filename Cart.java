@@ -12,6 +12,9 @@ public class Cart
   // MEMBER VARIABLES
   //------------------------
 
+  //Cart Attributes
+  private double totalPrice;
+
   //Cart Associations
   private Customer shopper;
   private List<ClothingItem> items;
@@ -20,8 +23,9 @@ public class Cart
   // CONSTRUCTOR
   //------------------------
 
-  public Cart(Customer aShopper)
+  public Cart(double aTotalPrice, Customer aShopper)
   {
+    totalPrice = aTotalPrice;
     if (aShopper == null || aShopper.getCart() != null)
     {
       throw new RuntimeException("Unable to create Cart due to aShopper. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
@@ -30,15 +34,29 @@ public class Cart
     items = new ArrayList<ClothingItem>();
   }
 
-  public Cart(String aUsernameForShopper, String aPasswordForShopper, String aNameForShopper, int aPhoneNumberForShopper, FashionStoreManagementApp aAppForShopper, String aAddressForShopper, String aPointsForShopper)
+  public Cart(double aTotalPrice, String aUsernameForShopper, String aPasswordForShopper, FashionStoreManagementApp aAppForShopper, String aAddressForShopper, int aLoyaltyPointsForShopper)
   {
-    shopper = new Customer(aUsernameForShopper, aPasswordForShopper, aNameForShopper, aPhoneNumberForShopper, aAppForShopper, aAddressForShopper, aPointsForShopper, this);
+    totalPrice = aTotalPrice;
+    shopper = new Customer(aUsernameForShopper, aPasswordForShopper, aAppForShopper, aAddressForShopper, aLoyaltyPointsForShopper, this);
     items = new ArrayList<ClothingItem>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
+
+  public boolean setTotalPrice(double aTotalPrice)
+  {
+    boolean wasSet = false;
+    totalPrice = aTotalPrice;
+    wasSet = true;
+    return wasSet;
+  }
+
+  public double getTotalPrice()
+  {
+    return totalPrice;
+  }
   /* Code from template association_GetOne */
   public Customer getShopper()
   {
@@ -80,9 +98,9 @@ public class Cart
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ClothingItem addItem(String aName, double aPrice, ClothingItem.Size aSize, int aPoints, Inventory aInventory, Order aOrder)
+  public ClothingItem addItem(String aName, double aPrice, ClothingItem.Size aSize, int aPointValue, Inventory aInventory)
   {
-    return new ClothingItem(aName, aPrice, aSize, aPoints, this, aInventory, aOrder);
+    return new ClothingItem(aName, aPrice, aSize, aPointValue, this, aInventory);
   }
 
   public boolean addItem(ClothingItem aItem)
@@ -162,4 +180,11 @@ public class Cart
     }
   }
 
+
+  public String toString()
+  {
+    return super.toString() + "["+
+            "totalPrice" + ":" + getTotalPrice()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "shopper = "+(getShopper()!=null?Integer.toHexString(System.identityHashCode(getShopper())):"null");
+  }
 }

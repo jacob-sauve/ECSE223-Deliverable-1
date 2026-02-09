@@ -3,8 +3,9 @@
 
 
 import java.util.*;
+import java.sql.Date;
 
-// line 29 "FashionProjectManagementApp.ump"
+// line 32 "FashionProjectManagementApp.ump"
 public class Customer extends UserAccount
 {
 
@@ -14,7 +15,7 @@ public class Customer extends UserAccount
 
   //Customer Attributes
   private String address;
-  private String points;
+  private int loyaltyPoints;
 
   //Customer Associations
   private Cart cart;
@@ -24,11 +25,11 @@ public class Customer extends UserAccount
   // CONSTRUCTOR
   //------------------------
 
-  public Customer(String aUsername, String aPassword, String aName, int aPhoneNumber, FashionStoreManagementApp aApp, String aAddress, String aPoints, Cart aCart)
+  public Customer(String aUsername, String aPassword, FashionStoreManagementApp aApp, String aAddress, int aLoyaltyPoints, Cart aCart)
   {
-    super(aUsername, aPassword, aName, aPhoneNumber, aApp);
+    super(aUsername, aPassword, aApp);
     address = aAddress;
-    points = aPoints;
+    loyaltyPoints = aLoyaltyPoints;
     if (aCart == null || aCart.getShopper() != null)
     {
       throw new RuntimeException("Unable to create Customer due to aCart. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
@@ -37,12 +38,12 @@ public class Customer extends UserAccount
     orders = new ArrayList<Order>();
   }
 
-  public Customer(String aUsername, String aPassword, String aName, int aPhoneNumber, FashionStoreManagementApp aApp, String aAddress, String aPoints)
+  public Customer(String aUsername, String aPassword, FashionStoreManagementApp aApp, String aAddress, int aLoyaltyPoints, double aTotalPriceForCart)
   {
-    super(aUsername, aPassword, aName, aPhoneNumber, aApp);
+    super(aUsername, aPassword, aApp);
     address = aAddress;
-    points = aPoints;
-    cart = new Cart(this);
+    loyaltyPoints = aLoyaltyPoints;
+    cart = new Cart(aTotalPriceForCart, this);
     orders = new ArrayList<Order>();
   }
 
@@ -58,10 +59,10 @@ public class Customer extends UserAccount
     return wasSet;
   }
 
-  public boolean setPoints(String aPoints)
+  public boolean setLoyaltyPoints(int aLoyaltyPoints)
   {
     boolean wasSet = false;
-    points = aPoints;
+    loyaltyPoints = aLoyaltyPoints;
     wasSet = true;
     return wasSet;
   }
@@ -71,9 +72,9 @@ public class Customer extends UserAccount
     return address;
   }
 
-  public String getPoints()
+  public int getLoyaltyPoints()
   {
-    return points;
+    return loyaltyPoints;
   }
   /* Code from template association_GetOne */
   public Cart getCart()
@@ -116,9 +117,9 @@ public class Customer extends UserAccount
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addOrder()
+  public Order addOrder(Date aDateOrdered, int aDaysUntilDelivery, Employee aItemGatherer)
   {
-    return new Order(this);
+    return new Order(aDateOrdered, aDaysUntilDelivery, this, aItemGatherer);
   }
 
   public boolean addOrder(Order aOrder)
@@ -204,7 +205,7 @@ public class Customer extends UserAccount
   {
     return super.toString() + "["+
             "address" + ":" + getAddress()+ "," +
-            "points" + ":" + getPoints()+ "]" + System.getProperties().getProperty("line.separator") +
+            "loyaltyPoints" + ":" + getLoyaltyPoints()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null");
   }
 }
