@@ -4,7 +4,7 @@
 
 import java.sql.Date;
 
-// line 35 "FashionProjectManagementApp.ump"
+// line 37 "FashionProjectManagementApp.ump"
 public class Shipment
 {
 

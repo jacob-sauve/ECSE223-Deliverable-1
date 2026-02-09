@@ -17,7 +17,9 @@ class Order {
 class UserAccount {
   unique String username;
   // constrain to a non-empty (+), unique, alphanumeric string
-  [username.matches("^[a-zA-Z0-9]+$")  password; // must be provided
+  // not currently functional
+  // [username.matches("^[a-zA-Z0-9]+$") 
+  password; // must be provided
   name;
   int phoneNumber;
 }
@@ -60,5 +62,6 @@ class Inventory {
 
 // all associations grouped together
 association {
-// 1 BTMS system <@>- * BusVehicle vehicles;
+1 FashionStoreManagementApp app <@>- 1 Inventory;
+1 FashionStoreManagementApp app <@>- * UserAccount;
 }

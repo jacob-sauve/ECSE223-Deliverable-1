@@ -3,7 +3,7 @@
 
 
 
-// line 53 "FashionProjectManagementApp.ump"
+// line 55 "FashionProjectManagementApp.ump"
 public class SeasonalItem
 {
 

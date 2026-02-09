@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 39 "FashionProjectManagementApp.ump"
+// line 41 "FashionProjectManagementApp.ump"
 public class ClothingItem
 {
 

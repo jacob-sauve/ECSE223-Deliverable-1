@@ -20,6 +20,7 @@ public class UserAccount
 
   //UserAccount Attributes
   private String username;
+  private String password;
   private String name;
   private int phoneNumber;
 
@@ -27,8 +28,9 @@ public class UserAccount
   // CONSTRUCTOR
   //------------------------
 
-  public UserAccount(String aUsername, String aName, int aPhoneNumber)
+  public UserAccount(String aUsername, String aPassword, String aName, int aPhoneNumber)
   {
+    password = aPassword;
     name = aName;
     phoneNumber = aPhoneNumber;
     if (!setUsername(aUsername))
@@ -57,6 +59,14 @@ public class UserAccount
       useraccountsByUsername.remove(anOldUsername);
     }
     useraccountsByUsername.put(aUsername, this);
+    return wasSet;
+  }
+
+  public boolean setPassword(String aPassword)
+  {
+    boolean wasSet = false;
+    password = aPassword;
+    wasSet = true;
     return wasSet;
   }
 
@@ -92,8 +102,16 @@ public class UserAccount
   }
 
   /**
+   * constrain to a non-empty (+), unique, alphanumeric string
+   * not currently functional
+   * [username.matches("^[a-zA-Z0-9]+$")
    * must be provided
    */
+  public String getPassword()
+  {
+    return password;
+  }
+
   public String getName()
   {
     return name;
@@ -114,15 +132,8 @@ public class UserAccount
   {
     return super.toString() + "["+
             "username" + ":" + getUsername()+ "," +
+            "password" + ":" + getPassword()+ "," +
             "name" + ":" + getName()+ "," +
             "phoneNumber" + ":" + getPhoneNumber()+ "]";
-  }  
-  //------------------------
-  // DEVELOPER CODE - PROVIDED AS-IS
-  //------------------------
-  
-  // line 20 "FashionProjectManagementApp.ump"
-  [username.matches("^[a-zA-Z0-9]+$")  password ;
-
-  
+  }
 }

@@ -3,7 +3,7 @@
 
 
 
-// line 30 "FashionProjectManagementApp.ump"
+// line 32 "FashionProjectManagementApp.ump"
 public class Manager
 {
 

@@ -3,7 +3,7 @@
 
 
 
-// line 25 "FashionProjectManagementApp.ump"
+// line 27 "FashionProjectManagementApp.ump"
 public class Customer
 {
 

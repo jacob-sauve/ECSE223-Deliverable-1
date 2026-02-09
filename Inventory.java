@@ -3,7 +3,7 @@
 
 
 
-// line 57 "FashionProjectManagementApp.ump"
+// line 59 "FashionProjectManagementApp.ump"
 public class Inventory
 {
 
