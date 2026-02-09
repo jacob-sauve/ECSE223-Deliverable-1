@@ -1,0 +1,64 @@
+class FashionStoreManagementApp {
+  
+}
+
+class Employee {
+  
+}
+
+class Cart {
+  
+}
+
+class Order {
+  autounique orderNumber;
+}
+
+class UserAccount {
+  unique String username;
+  // constrain to a non-empty (+), unique, alphanumeric string
+  [username.matches("^[a-zA-Z0-9]+$")  password; // must be provided
+  name;
+  int phoneNumber;
+}
+
+class Customer {
+  address;
+  points;
+}
+
+class Manager {
+  username="manager";
+  password="manager";
+}
+
+class Shipment {
+  Date deliveryDate;
+}
+
+class ClothingItem {
+  unique String name;
+  Double price;
+  Size size;
+  Integer points;
+  [points >= 1 && points <= 5]
+  enum Size {S, M, L, XL}
+}
+
+class LimitedItem {
+  Date startDate;
+  Date endDate;
+}
+
+class SeasonalItem {
+  
+}
+
+class Inventory {
+  
+}
+
+// all associations grouped together
+association {
+// 1 BTMS system <@>- * BusVehicle vehicles;
+}
