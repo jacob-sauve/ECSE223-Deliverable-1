@@ -15,11 +15,12 @@ class Order {
 }
 
 class UserAccount {
+  abstract;
   unique String username;
   // constrain to a non-empty (+), unique, alphanumeric string
   // not currently functional
-  // [username.matches("^[a-zA-Z0-9]+$") 
-  password; // must be provided
+  // password mandatory
+  password;
   name;
   int phoneNumber;
 }
@@ -64,4 +65,5 @@ class Inventory {
 association {
 1 FashionStoreManagementApp app <@>- 1 Inventory;
 1 FashionStoreManagementApp app <@>- * UserAccount;
+1 FashionStoreManagementApp app <@>- * Shipment;
 }
