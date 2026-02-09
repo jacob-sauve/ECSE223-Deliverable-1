@@ -5,7 +5,7 @@
 import java.util.*;
 
 // line 17 "FashionProjectManagementApp.ump"
-public class UserAccount
+public abstract class UserAccount
 {
 
   //------------------------
@@ -24,11 +24,14 @@ public class UserAccount
   private String name;
   private int phoneNumber;
 
+  //UserAccount Associations
+  private FashionStoreManagementApp app;
+
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public UserAccount(String aUsername, String aPassword, String aName, int aPhoneNumber)
+  public UserAccount(String aUsername, String aPassword, String aName, int aPhoneNumber, FashionStoreManagementApp aApp)
   {
     password = aPassword;
     name = aName;
@@ -36,6 +39,11 @@ public class UserAccount
     if (!setUsername(aUsername))
     {
       throw new RuntimeException("Cannot create due to duplicate username. See http://manual.umple.org?RE003ViolationofUniqueness.html");
+    }
+    boolean didAddApp = setApp(aApp);
+    if (!didAddApp)
+    {
+      throw new RuntimeException("Unable to create userAccount due to app. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -104,8 +112,7 @@ public class UserAccount
   /**
    * constrain to a non-empty (+), unique, alphanumeric string
    * not currently functional
-   * [username.matches("^[a-zA-Z0-9]+$")
-   * must be provided
+   * password mandatory
    */
   public String getPassword()
   {
@@ -121,10 +128,40 @@ public class UserAccount
   {
     return phoneNumber;
   }
+  /* Code from template association_GetOne */
+  public FashionStoreManagementApp getApp()
+  {
+    return app;
+  }
+  /* Code from template association_SetOneToMany */
+  public boolean setApp(FashionStoreManagementApp aApp)
+  {
+    boolean wasSet = false;
+    if (aApp == null)
+    {
+      return wasSet;
+    }
+
+    FashionStoreManagementApp existingApp = app;
+    app = aApp;
+    if (existingApp != null && !existingApp.equals(aApp))
+    {
+      existingApp.removeUserAccount(this);
+    }
+    app.addUserAccount(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
     useraccountsByUsername.remove(getUsername());
+    FashionStoreManagementApp placeholderApp = app;
+    this.app = null;
+    if(placeholderApp != null)
+    {
+      placeholderApp.removeUserAccount(this);
+    }
   }
 
 
@@ -134,6 +171,7 @@ public class UserAccount
             "username" + ":" + getUsername()+ "," +
             "password" + ":" + getPassword()+ "," +
             "name" + ":" + getName()+ "," +
-            "phoneNumber" + ":" + getPhoneNumber()+ "]";
+            "phoneNumber" + ":" + getPhoneNumber()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "app = "+(getApp()!=null?Integer.toHexString(System.identityHashCode(getApp())):"null");
   }
 }

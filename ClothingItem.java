@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 41 "FashionProjectManagementApp.ump"
+// line 44 "FashionProjectManagementApp.ump"
 public class ClothingItem
 {
 
@@ -30,11 +30,15 @@ public class ClothingItem
   private Size size;
   private int points;
 
+  //ClothingItem Associations
+  private Cart cart;
+  private Inventory inventory;
+
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ClothingItem(String aName, double aPrice, Size aSize, int aPoints)
+  public ClothingItem(String aName, double aPrice, Size aSize, int aPoints, Cart aCart, Inventory aInventory)
   {
     price = aPrice;
     size = aSize;
@@ -42,6 +46,20 @@ public class ClothingItem
     if (!setName(aName))
     {
       throw new RuntimeException("Cannot create due to duplicate name. See http://manual.umple.org?RE003ViolationofUniqueness.html");
+    }
+    boolean didAddCart = setCart(aCart);
+    if (!didAddCart)
+    {
+      throw new RuntimeException("Unable to create item due to cart. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddInventory = setInventory(aInventory);
+    if (!didAddInventory)
+    {
+      throw new RuntimeException("Unable to create item due to inventory. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    if (aPoints<1||aPoints>5)
+    {
+      throw new RuntimeException("Please provide a valid points [points>=1&&points<=5]");
     }
     if (aPoints<1||aPoints>5)
     {
@@ -93,8 +111,11 @@ public class ClothingItem
     boolean wasSet = false;
     if (aPoints>=1&&aPoints<=5)
     {
+    if (aPoints>=1&&aPoints<=5)
+    {
     points = aPoints;
     wasSet = true;
+    }
     }
     return wasSet;
   }
@@ -128,10 +149,70 @@ public class ClothingItem
   {
     return points;
   }
+  /* Code from template association_GetOne */
+  public Cart getCart()
+  {
+    return cart;
+  }
+  /* Code from template association_GetOne */
+  public Inventory getInventory()
+  {
+    return inventory;
+  }
+  /* Code from template association_SetOneToMany */
+  public boolean setCart(Cart aCart)
+  {
+    boolean wasSet = false;
+    if (aCart == null)
+    {
+      return wasSet;
+    }
+
+    Cart existingCart = cart;
+    cart = aCart;
+    if (existingCart != null && !existingCart.equals(aCart))
+    {
+      existingCart.removeItem(this);
+    }
+    cart.addItem(this);
+    wasSet = true;
+    return wasSet;
+  }
+  /* Code from template association_SetOneToMany */
+  public boolean setInventory(Inventory aInventory)
+  {
+    boolean wasSet = false;
+    if (aInventory == null)
+    {
+      return wasSet;
+    }
+
+    Inventory existingInventory = inventory;
+    inventory = aInventory;
+    if (existingInventory != null && !existingInventory.equals(aInventory))
+    {
+      existingInventory.removeItem(this);
+    }
+    inventory.addItem(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
     clothingitemsByName.remove(getName());
+    Cart placeholderCart = cart;
+    this.cart = null;
+    if(placeholderCart != null)
+    {
+      placeholderCart.removeItem(this);
+    }
+    Inventory placeholderInventory = inventory;
+    this.inventory = null;
+    if(placeholderInventory != null)
+    {
+      placeholderInventory.removeItem(this);
+    }
   }
 
 
@@ -141,6 +222,8 @@ public class ClothingItem
             "name" + ":" + getName()+ "," +
             "price" + ":" + getPrice()+ "," +
             "points" + ":" + getPoints()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null");
+            "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null");
   }
 }

@@ -3,7 +3,7 @@ class FashionStoreManagementApp {
 }
 
 class Employee {
-  
+  isA UserAccount;
 }
 
 class Cart {
@@ -26,11 +26,13 @@ class UserAccount {
 }
 
 class Customer {
+  isA UserAccount;
   address;
   points;
 }
 
 class Manager {
+  isA UserAccount;
   username="manager";
   password="manager";
 }
@@ -49,12 +51,15 @@ class ClothingItem {
 }
 
 class LimitedItem {
+  isA ClothingItem;
   Date startDate;
   Date endDate;
 }
 
 class SeasonalItem {
-  
+  isA LimitedItem;
+  Season season;
+  enum Season {Winter, Spring, Summer, Fall}
 }
 
 class Inventory {
@@ -66,4 +71,7 @@ association {
 1 FashionStoreManagementApp app <@>- 1 Inventory;
 1 FashionStoreManagementApp app <@>- * UserAccount;
 1 FashionStoreManagementApp app <@>- * Shipment;
+1 Customer shopper -- 1 Cart;
+1 Cart -- * ClothingItem items;
+1 Inventory -- * ClothingItem items;
 }

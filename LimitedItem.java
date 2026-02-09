@@ -3,9 +3,10 @@
 
 
 import java.sql.Date;
+import java.util.*;
 
-// line 50 "FashionProjectManagementApp.ump"
-public class LimitedItem
+// line 53 "FashionProjectManagementApp.ump"
+public class LimitedItem extends ClothingItem
 {
 
   //------------------------
@@ -20,8 +21,9 @@ public class LimitedItem
   // CONSTRUCTOR
   //------------------------
 
-  public LimitedItem(Date aStartDate, Date aEndDate)
+  public LimitedItem(String aName, double aPrice, Size aSize, int aPoints, Cart aCart, Inventory aInventory, Date aStartDate, Date aEndDate)
   {
+    super(aName, aPrice, aSize, aPoints, aCart, aInventory);
     startDate = aStartDate;
     endDate = aEndDate;
   }
@@ -57,7 +59,9 @@ public class LimitedItem
   }
 
   public void delete()
-  {}
+  {
+    super.delete();
+  }
 
 
   public String toString()

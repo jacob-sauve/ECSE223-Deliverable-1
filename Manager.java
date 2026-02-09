@@ -2,9 +2,10 @@
 /*This code was generated using the UMPLE 1.33.0.6934.a386b0a58 modeling language!*/
 
 
+import java.util.*;
 
-// line 32 "FashionProjectManagementApp.ump"
-public class Manager
+// line 34 "FashionProjectManagementApp.ump"
+public class Manager extends UserAccount
 {
 
   //------------------------
@@ -19,8 +20,9 @@ public class Manager
   // CONSTRUCTOR
   //------------------------
 
-  public Manager()
+  public Manager(String aUsername, String aPassword, String aName, int aPhoneNumber, FashionStoreManagementApp aApp)
   {
+    super(aUsername, aPassword, aName, aPhoneNumber, aApp);
     username = "manager";
     password = "manager";
   }
@@ -56,7 +58,9 @@ public class Manager
   }
 
   public void delete()
-  {}
+  {
+    super.delete();
+  }
 
 
   public String toString()

@@ -4,7 +4,7 @@
 
 import java.sql.Date;
 
-// line 37 "FashionProjectManagementApp.ump"
+// line 40 "FashionProjectManagementApp.ump"
 public class Shipment
 {
 
@@ -15,13 +15,21 @@ public class Shipment
   //Shipment Attributes
   private Date deliveryDate;
 
+  //Shipment Associations
+  private FashionStoreManagementApp app;
+
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Shipment(Date aDeliveryDate)
+  public Shipment(Date aDeliveryDate, FashionStoreManagementApp aApp)
   {
     deliveryDate = aDeliveryDate;
+    boolean didAddApp = setApp(aApp);
+    if (!didAddApp)
+    {
+      throw new RuntimeException("Unable to create shipment due to app. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
   }
 
   //------------------------
@@ -40,14 +48,46 @@ public class Shipment
   {
     return deliveryDate;
   }
+  /* Code from template association_GetOne */
+  public FashionStoreManagementApp getApp()
+  {
+    return app;
+  }
+  /* Code from template association_SetOneToMany */
+  public boolean setApp(FashionStoreManagementApp aApp)
+  {
+    boolean wasSet = false;
+    if (aApp == null)
+    {
+      return wasSet;
+    }
+
+    FashionStoreManagementApp existingApp = app;
+    app = aApp;
+    if (existingApp != null && !existingApp.equals(aApp))
+    {
+      existingApp.removeShipment(this);
+    }
+    app.addShipment(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
-  {}
+  {
+    FashionStoreManagementApp placeholderApp = app;
+    this.app = null;
+    if(placeholderApp != null)
+    {
+      placeholderApp.removeShipment(this);
+    }
+  }
 
 
   public String toString()
   {
     return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "deliveryDate" + "=" + (getDeliveryDate() != null ? !getDeliveryDate().equals(this)  ? getDeliveryDate().toString().replaceAll("  ","    ") : "this" : "null");
+            "  " + "deliveryDate" + "=" + (getDeliveryDate() != null ? !getDeliveryDate().equals(this)  ? getDeliveryDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "app = "+(getApp()!=null?Integer.toHexString(System.identityHashCode(getApp())):"null");
   }
 }
