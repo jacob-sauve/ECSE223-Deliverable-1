@@ -7,12 +7,15 @@ class Employee {
 }
 
 class Cart {
-  
+  Double totalPrice;
 }
 
 class Order {
   // auto-incremented unique Integer
   autounique orderNumber;
+  Date orderDate;
+  Integer daysToDelivery;
+  [daysToDelivery >= 0 && daysToDelivery <= 3]
 }
 
 class UserAccount {
@@ -33,7 +36,7 @@ class Customer {
 }
 
 class Manager {
-  isA UserAccount;
+  isA Employee;
   username="manager";
   password="manager";
 }
@@ -74,7 +77,8 @@ association {
 1 FashionStoreManagementApp app <@>- * Shipment;
 1 Customer shopper -- 1 Cart;
 1 Cart -- * ClothingItem items;
-1 Inventory -- * ClothingItem items;
+1 Inventory -- * ClothingItem availableItems;
 * Order orders -- 1 Customer;
-1 Order -- * ClothingItem items;
+* Order -- * ClothingItem requestedItems;
+* Order assignedOrders -- 1 Employee itemGatherer;
 }
