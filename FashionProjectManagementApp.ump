@@ -13,26 +13,26 @@ class Cart {
 class Order {
   // auto-incremented unique Integer
   autounique orderNumber;
-  Date orderDate;
-  Integer daysToDelivery;
-  [daysToDelivery >= 0 && daysToDelivery <= 3]
+  Date dateOrdered;
+  Integer daysUntilDelivery;
+  [daysUntilDelivery >= 0 && daysUntilDelivery <= 3]
 }
 
 class UserAccount {
   abstract;
-  unique String username;
+  unique immutable String username;
   // constrain to a non-empty (+), unique, alphanumeric string
   // not currently functional
   // password mandatory
   password;
-  name;
-  int phoneNumber;
+  lazy name;
+  lazy Integer phoneNumber;
 }
 
 class Customer {
   isA UserAccount;
   address;
-  points;
+  Integer loyaltyPoints;
 }
 
 class Manager {
@@ -42,7 +42,8 @@ class Manager {
 }
 
 class Shipment {
-  Date deliveryDate;
+  Date dateOrdered;
+  lazy Date deliveryDate;
 }
 
 class ClothingItem {
@@ -77,8 +78,9 @@ association {
 1 FashionStoreManagementApp app <@>- * Shipment;
 1 Customer shopper -- 1 Cart;
 1 Cart -- * ClothingItem items;
-1 Inventory -- * ClothingItem availableItems;
+1 Inventory -- * ClothingItem stockedItems;
 * Order orders -- 1 Customer;
 * Order -- * ClothingItem requestedItems;
 * Order assignedOrders -- 1 Employee itemGatherer;
+* Shipment -- * ClothingItem receivedItems;
 }
