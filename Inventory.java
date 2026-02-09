@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 65 "FashionProjectManagementApp.ump"
+// line 66 "FashionProjectManagementApp.ump"
 public class Inventory
 {
 
@@ -80,9 +80,9 @@ public class Inventory
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ClothingItem addItem(String aName, double aPrice, ClothingItem.Size aSize, int aPoints, Cart aCart)
+  public ClothingItem addItem(String aName, double aPrice, ClothingItem.Size aSize, int aPoints, Cart aCart, Order aOrder)
   {
-    return new ClothingItem(aName, aPrice, aSize, aPoints, aCart, this);
+    return new ClothingItem(aName, aPrice, aSize, aPoints, aCart, this, aOrder);
   }
 
   public boolean addItem(ClothingItem aItem)

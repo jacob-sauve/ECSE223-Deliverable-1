@@ -11,6 +11,7 @@ class Cart {
 }
 
 class Order {
+  // auto-incremented unique Integer
   autounique orderNumber;
 }
 
@@ -74,4 +75,6 @@ association {
 1 Customer shopper -- 1 Cart;
 1 Cart -- * ClothingItem items;
 1 Inventory -- * ClothingItem items;
+* Order orders -- 1 Customer;
+1 Order -- * ClothingItem items;
 }

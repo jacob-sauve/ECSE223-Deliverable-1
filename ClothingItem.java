@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 44 "FashionProjectManagementApp.ump"
+// line 45 "FashionProjectManagementApp.ump"
 public class ClothingItem
 {
 
@@ -33,12 +33,13 @@ public class ClothingItem
   //ClothingItem Associations
   private Cart cart;
   private Inventory inventory;
+  private Order order;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ClothingItem(String aName, double aPrice, Size aSize, int aPoints, Cart aCart, Inventory aInventory)
+  public ClothingItem(String aName, double aPrice, Size aSize, int aPoints, Cart aCart, Inventory aInventory, Order aOrder)
   {
     price = aPrice;
     size = aSize;
@@ -56,6 +57,11 @@ public class ClothingItem
     if (!didAddInventory)
     {
       throw new RuntimeException("Unable to create item due to inventory. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddOrder = setOrder(aOrder);
+    if (!didAddOrder)
+    {
+      throw new RuntimeException("Unable to create item due to order. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     if (aPoints<1||aPoints>5)
     {
@@ -159,6 +165,11 @@ public class ClothingItem
   {
     return inventory;
   }
+  /* Code from template association_GetOne */
+  public Order getOrder()
+  {
+    return order;
+  }
   /* Code from template association_SetOneToMany */
   public boolean setCart(Cart aCart)
   {
@@ -197,6 +208,25 @@ public class ClothingItem
     wasSet = true;
     return wasSet;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setOrder(Order aOrder)
+  {
+    boolean wasSet = false;
+    if (aOrder == null)
+    {
+      return wasSet;
+    }
+
+    Order existingOrder = order;
+    order = aOrder;
+    if (existingOrder != null && !existingOrder.equals(aOrder))
+    {
+      existingOrder.removeItem(this);
+    }
+    order.addItem(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -213,6 +243,12 @@ public class ClothingItem
     {
       placeholderInventory.removeItem(this);
     }
+    Order placeholderOrder = order;
+    this.order = null;
+    if(placeholderOrder != null)
+    {
+      placeholderOrder.removeItem(this);
+    }
   }
 
 
@@ -224,6 +260,7 @@ public class ClothingItem
             "points" + ":" + getPoints()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null");
+            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "order = "+(getOrder()!=null?Integer.toHexString(System.identityHashCode(getOrder())):"null");
   }
 }

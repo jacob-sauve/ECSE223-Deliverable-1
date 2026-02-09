@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 34 "FashionProjectManagementApp.ump"
+// line 35 "FashionProjectManagementApp.ump"
 public class Manager extends UserAccount
 {
 

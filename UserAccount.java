@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 17 "FashionProjectManagementApp.ump"
+// line 18 "FashionProjectManagementApp.ump"
 public abstract class UserAccount
 {
 

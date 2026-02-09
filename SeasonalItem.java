@@ -5,7 +5,7 @@
 import java.sql.Date;
 import java.util.*;
 
-// line 59 "FashionProjectManagementApp.ump"
+// line 60 "FashionProjectManagementApp.ump"
 public class SeasonalItem extends LimitedItem
 {
 
@@ -26,9 +26,9 @@ public class SeasonalItem extends LimitedItem
   // CONSTRUCTOR
   //------------------------
 
-  public SeasonalItem(String aName, double aPrice, Size aSize, int aPoints, Cart aCart, Inventory aInventory, Date aStartDate, Date aEndDate, Season aSeason)
+  public SeasonalItem(String aName, double aPrice, Size aSize, int aPoints, Cart aCart, Inventory aInventory, Order aOrder, Date aStartDate, Date aEndDate, Season aSeason)
   {
-    super(aName, aPrice, aSize, aPoints, aCart, aInventory, aStartDate, aEndDate);
+    super(aName, aPrice, aSize, aPoints, aCart, aInventory, aOrder, aStartDate, aEndDate);
     season = aSeason;
   }
 

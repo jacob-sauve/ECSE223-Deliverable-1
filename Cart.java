@@ -80,9 +80,9 @@ public class Cart
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ClothingItem addItem(String aName, double aPrice, ClothingItem.Size aSize, int aPoints, Inventory aInventory)
+  public ClothingItem addItem(String aName, double aPrice, ClothingItem.Size aSize, int aPoints, Inventory aInventory, Order aOrder)
   {
-    return new ClothingItem(aName, aPrice, aSize, aPoints, this, aInventory);
+    return new ClothingItem(aName, aPrice, aSize, aPoints, this, aInventory, aOrder);
   }
 
   public boolean addItem(ClothingItem aItem)
