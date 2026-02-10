@@ -3,10 +3,9 @@
 
 
 import java.util.*;
-import java.sql.Date;
 
-// line 5 "FashionProjectManagementApp.ump"
-public class Employee extends UserAccount
+// line 16 "FashionProjectManagementApp.ump"
+public class Employee extends AccountType
 {
 
   //------------------------
@@ -14,130 +13,166 @@ public class Employee extends UserAccount
   //------------------------
 
   //Employee Associations
-  private List<Order> assignedOrders;
+  private List<Order> ordersToAssemble;
+  private Manager storeManager;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Employee(String aUsername, String aPassword, User aUser)
+  public Employee(String aUsername, String aPassword, User aPerson, Manager aStoreManager)
   {
-    super(aUsername, aPassword, aUser);
-    assignedOrders = new ArrayList<Order>();
+    super(aUsername, aPassword, aPerson);
+    ordersToAssemble = new ArrayList<Order>();
+    boolean didAddStoreManager = setStoreManager(aStoreManager);
+    if (!didAddStoreManager)
+    {
+      throw new RuntimeException("Unable to create managedEmployee due to storeManager. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
   }
 
   //------------------------
   // INTERFACE
   //------------------------
   /* Code from template association_GetMany */
-  public Order getAssignedOrder(int index)
+  public Order getOrdersToAssemble(int index)
   {
-    Order aAssignedOrder = assignedOrders.get(index);
-    return aAssignedOrder;
+    Order aOrdersToAssemble = ordersToAssemble.get(index);
+    return aOrdersToAssemble;
   }
 
-  public List<Order> getAssignedOrders()
+  public List<Order> getOrdersToAssemble()
   {
-    List<Order> newAssignedOrders = Collections.unmodifiableList(assignedOrders);
-    return newAssignedOrders;
+    List<Order> newOrdersToAssemble = Collections.unmodifiableList(ordersToAssemble);
+    return newOrdersToAssemble;
   }
 
-  public int numberOfAssignedOrders()
+  public int numberOfOrdersToAssemble()
   {
-    int number = assignedOrders.size();
+    int number = ordersToAssemble.size();
     return number;
   }
 
-  public boolean hasAssignedOrders()
+  public boolean hasOrdersToAssemble()
   {
-    boolean has = assignedOrders.size() > 0;
+    boolean has = ordersToAssemble.size() > 0;
     return has;
   }
 
-  public int indexOfAssignedOrder(Order aAssignedOrder)
+  public int indexOfOrdersToAssemble(Order aOrdersToAssemble)
   {
-    int index = assignedOrders.indexOf(aAssignedOrder);
+    int index = ordersToAssemble.indexOf(aOrdersToAssemble);
     return index;
   }
+  /* Code from template association_GetOne */
+  public Manager getStoreManager()
+  {
+    return storeManager;
+  }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfAssignedOrders()
+  public static int minimumNumberOfOrdersToAssemble()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addAssignedOrder(Date aDateOrdered, int aDaysUntilDelivery, Customer aCustomer)
+  public Order addOrdersToAssemble(int aOrderNumber, int aShippingDelay, Customer aCustomer, Manager aManager, Cart aPaidCart, Address aDeliveryAddress)
   {
-    return new Order(aDateOrdered, aDaysUntilDelivery, aCustomer, this);
+    return new Order(aOrderNumber, aShippingDelay, aCustomer, aManager, this, aPaidCart, aDeliveryAddress);
   }
 
-  public boolean addAssignedOrder(Order aAssignedOrder)
+  public boolean addOrdersToAssemble(Order aOrdersToAssemble)
   {
     boolean wasAdded = false;
-    if (assignedOrders.contains(aAssignedOrder)) { return false; }
-    Employee existingItemGatherer = aAssignedOrder.getItemGatherer();
+    if (ordersToAssemble.contains(aOrdersToAssemble)) { return false; }
+    Employee existingItemGatherer = aOrdersToAssemble.getItemGatherer();
     boolean isNewItemGatherer = existingItemGatherer != null && !this.equals(existingItemGatherer);
     if (isNewItemGatherer)
     {
-      aAssignedOrder.setItemGatherer(this);
+      aOrdersToAssemble.setItemGatherer(this);
     }
     else
     {
-      assignedOrders.add(aAssignedOrder);
+      ordersToAssemble.add(aOrdersToAssemble);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeAssignedOrder(Order aAssignedOrder)
+  public boolean removeOrdersToAssemble(Order aOrdersToAssemble)
   {
     boolean wasRemoved = false;
-    //Unable to remove aAssignedOrder, as it must always have a itemGatherer
-    if (!this.equals(aAssignedOrder.getItemGatherer()))
+    //Unable to remove aOrdersToAssemble, as it must always have a itemGatherer
+    if (!this.equals(aOrdersToAssemble.getItemGatherer()))
     {
-      assignedOrders.remove(aAssignedOrder);
+      ordersToAssemble.remove(aOrdersToAssemble);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addAssignedOrderAt(Order aAssignedOrder, int index)
+  public boolean addOrdersToAssembleAt(Order aOrdersToAssemble, int index)
   {  
     boolean wasAdded = false;
-    if(addAssignedOrder(aAssignedOrder))
+    if(addOrdersToAssemble(aOrdersToAssemble))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfAssignedOrders()) { index = numberOfAssignedOrders() - 1; }
-      assignedOrders.remove(aAssignedOrder);
-      assignedOrders.add(index, aAssignedOrder);
+      if(index > numberOfOrdersToAssemble()) { index = numberOfOrdersToAssemble() - 1; }
+      ordersToAssemble.remove(aOrdersToAssemble);
+      ordersToAssemble.add(index, aOrdersToAssemble);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveAssignedOrderAt(Order aAssignedOrder, int index)
+  public boolean addOrMoveOrdersToAssembleAt(Order aOrdersToAssemble, int index)
   {
     boolean wasAdded = false;
-    if(assignedOrders.contains(aAssignedOrder))
+    if(ordersToAssemble.contains(aOrdersToAssemble))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfAssignedOrders()) { index = numberOfAssignedOrders() - 1; }
-      assignedOrders.remove(aAssignedOrder);
-      assignedOrders.add(index, aAssignedOrder);
+      if(index > numberOfOrdersToAssemble()) { index = numberOfOrdersToAssemble() - 1; }
+      ordersToAssemble.remove(aOrdersToAssemble);
+      ordersToAssemble.add(index, aOrdersToAssemble);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addAssignedOrderAt(aAssignedOrder, index);
+      wasAdded = addOrdersToAssembleAt(aOrdersToAssemble, index);
     }
     return wasAdded;
+  }
+  /* Code from template association_SetOneToMany */
+  public boolean setStoreManager(Manager aStoreManager)
+  {
+    boolean wasSet = false;
+    if (aStoreManager == null)
+    {
+      return wasSet;
+    }
+
+    Manager existingStoreManager = storeManager;
+    storeManager = aStoreManager;
+    if (existingStoreManager != null && !existingStoreManager.equals(aStoreManager))
+    {
+      existingStoreManager.removeManagedEmployee(this);
+    }
+    storeManager.addManagedEmployee(this);
+    wasSet = true;
+    return wasSet;
   }
 
   public void delete()
   {
-    for(int i=assignedOrders.size(); i > 0; i--)
+    for(int i=ordersToAssemble.size(); i > 0; i--)
     {
-      Order aAssignedOrder = assignedOrders.get(i - 1);
-      aAssignedOrder.delete();
+      Order aOrdersToAssemble = ordersToAssemble.get(i - 1);
+      aOrdersToAssemble.delete();
+    }
+    Manager placeholderStoreManager = storeManager;
+    this.storeManager = null;
+    if(placeholderStoreManager != null)
+    {
+      placeholderStoreManager.removeManagedEmployee(this);
     }
     super.delete();
   }

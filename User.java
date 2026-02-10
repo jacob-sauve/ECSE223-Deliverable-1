@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 21 "FashionProjectManagementApp.ump"
+// line 5 "FashionProjectManagementApp.ump"
 public class User
 {
 
@@ -14,26 +14,20 @@ public class User
 
   //User Attributes
   private String name;
-  private int phoneNumber;
+  private String phoneNumber;
 
   //User Associations
-  private List<UserAccount> userAccounts;
-  private FashionStoreManagementApp app;
+  private List<AccountType> storeRoles;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public User(FashionStoreManagementApp aApp)
+  public User()
   {
     name = null;
-    phoneNumber = 0;
-    userAccounts = new ArrayList<UserAccount>();
-    boolean didAddApp = setApp(aApp);
-    if (!didAddApp)
-    {
-      throw new RuntimeException("Unable to create user due to app. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
+    phoneNumber = null;
+    storeRoles = new ArrayList<AccountType>();
   }
 
   //------------------------
@@ -48,7 +42,7 @@ public class User
     return wasSet;
   }
 
-  public boolean setPhoneNumber(int aPhoneNumber)
+  public boolean setPhoneNumber(String aPhoneNumber)
   {
     boolean wasSet = false;
     phoneNumber = aPhoneNumber;
@@ -61,156 +55,126 @@ public class User
     return name;
   }
 
-  public int getPhoneNumber()
+  public String getPhoneNumber()
   {
     return phoneNumber;
   }
   /* Code from template association_GetMany */
-  public UserAccount getUserAccount(int index)
+  public AccountType getStoreRole(int index)
   {
-    UserAccount aUserAccount = userAccounts.get(index);
-    return aUserAccount;
+    AccountType aStoreRole = storeRoles.get(index);
+    return aStoreRole;
   }
 
-  public List<UserAccount> getUserAccounts()
+  public List<AccountType> getStoreRoles()
   {
-    List<UserAccount> newUserAccounts = Collections.unmodifiableList(userAccounts);
-    return newUserAccounts;
+    List<AccountType> newStoreRoles = Collections.unmodifiableList(storeRoles);
+    return newStoreRoles;
   }
 
-  public int numberOfUserAccounts()
+  public int numberOfStoreRoles()
   {
-    int number = userAccounts.size();
+    int number = storeRoles.size();
     return number;
   }
 
-  public boolean hasUserAccounts()
+  public boolean hasStoreRoles()
   {
-    boolean has = userAccounts.size() > 0;
+    boolean has = storeRoles.size() > 0;
     return has;
   }
 
-  public int indexOfUserAccount(UserAccount aUserAccount)
+  public int indexOfStoreRole(AccountType aStoreRole)
   {
-    int index = userAccounts.indexOf(aUserAccount);
+    int index = storeRoles.indexOf(aStoreRole);
     return index;
   }
-  /* Code from template association_GetOne */
-  public FashionStoreManagementApp getApp()
-  {
-    return app;
-  }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfUserAccounts()
+  public static int minimumNumberOfStoreRoles()
   {
     return 0;
   }
   /* Code from template association_MaximumNumberOfMethod */
-  public static int maximumNumberOfUserAccounts()
+  public static int maximumNumberOfStoreRoles()
   {
     return 3;
   }
   /* Code from template association_AddOptionalNToOne */
 
 
-  public boolean addUserAccount(UserAccount aUserAccount)
+  public boolean addStoreRole(AccountType aStoreRole)
   {
     boolean wasAdded = false;
-    if (userAccounts.contains(aUserAccount)) { return false; }
-    if (numberOfUserAccounts() >= maximumNumberOfUserAccounts())
+    if (storeRoles.contains(aStoreRole)) { return false; }
+    if (numberOfStoreRoles() >= maximumNumberOfStoreRoles())
     {
       return wasAdded;
     }
 
-    User existingUser = aUserAccount.getUser();
-    boolean isNewUser = existingUser != null && !this.equals(existingUser);
-    if (isNewUser)
+    User existingPerson = aStoreRole.getPerson();
+    boolean isNewPerson = existingPerson != null && !this.equals(existingPerson);
+    if (isNewPerson)
     {
-      aUserAccount.setUser(this);
+      aStoreRole.setPerson(this);
     }
     else
     {
-      userAccounts.add(aUserAccount);
+      storeRoles.add(aStoreRole);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeUserAccount(UserAccount aUserAccount)
+  public boolean removeStoreRole(AccountType aStoreRole)
   {
     boolean wasRemoved = false;
-    //Unable to remove aUserAccount, as it must always have a user
-    if (!this.equals(aUserAccount.getUser()))
+    //Unable to remove aStoreRole, as it must always have a person
+    if (!this.equals(aStoreRole.getPerson()))
     {
-      userAccounts.remove(aUserAccount);
+      storeRoles.remove(aStoreRole);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addUserAccountAt(UserAccount aUserAccount, int index)
+  public boolean addStoreRoleAt(AccountType aStoreRole, int index)
   {  
     boolean wasAdded = false;
-    if(addUserAccount(aUserAccount))
+    if(addStoreRole(aStoreRole))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfUserAccounts()) { index = numberOfUserAccounts() - 1; }
-      userAccounts.remove(aUserAccount);
-      userAccounts.add(index, aUserAccount);
+      if(index > numberOfStoreRoles()) { index = numberOfStoreRoles() - 1; }
+      storeRoles.remove(aStoreRole);
+      storeRoles.add(index, aStoreRole);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveUserAccountAt(UserAccount aUserAccount, int index)
+  public boolean addOrMoveStoreRoleAt(AccountType aStoreRole, int index)
   {
     boolean wasAdded = false;
-    if(userAccounts.contains(aUserAccount))
+    if(storeRoles.contains(aStoreRole))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfUserAccounts()) { index = numberOfUserAccounts() - 1; }
-      userAccounts.remove(aUserAccount);
-      userAccounts.add(index, aUserAccount);
+      if(index > numberOfStoreRoles()) { index = numberOfStoreRoles() - 1; }
+      storeRoles.remove(aStoreRole);
+      storeRoles.add(index, aStoreRole);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addUserAccountAt(aUserAccount, index);
+      wasAdded = addStoreRoleAt(aStoreRole, index);
     }
     return wasAdded;
-  }
-  /* Code from template association_SetOneToMany */
-  public boolean setApp(FashionStoreManagementApp aApp)
-  {
-    boolean wasSet = false;
-    if (aApp == null)
-    {
-      return wasSet;
-    }
-
-    FashionStoreManagementApp existingApp = app;
-    app = aApp;
-    if (existingApp != null && !existingApp.equals(aApp))
-    {
-      existingApp.removeUser(this);
-    }
-    app.addUser(this);
-    wasSet = true;
-    return wasSet;
   }
 
   public void delete()
   {
-    for(int i=userAccounts.size(); i > 0; i--)
+    for(int i=storeRoles.size(); i > 0; i--)
     {
-      UserAccount aUserAccount = userAccounts.get(i - 1);
-      aUserAccount.delete();
-    }
-    FashionStoreManagementApp placeholderApp = app;
-    this.app = null;
-    if(placeholderApp != null)
-    {
-      placeholderApp.removeUser(this);
+      AccountType aStoreRole = storeRoles.get(i - 1);
+      aStoreRole.delete();
     }
   }
 
@@ -219,7 +183,6 @@ public class User
   {
     return super.toString() + "["+
             "name" + ":" + getName()+ "," +
-            "phoneNumber" + ":" + getPhoneNumber()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "app = "+(getApp()!=null?Integer.toHexString(System.identityHashCode(getApp())):"null");
+            "phoneNumber" + ":" + getPhoneNumber()+ "]";
   }
 }

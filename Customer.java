@@ -3,10 +3,9 @@
 
 
 import java.util.*;
-import java.sql.Date;
 
-// line 35 "FashionProjectManagementApp.ump"
-public class Customer extends UserAccount
+// line 20 "FashionProjectManagementApp.ump"
+public class Customer extends AccountType
 {
 
   //------------------------
@@ -14,50 +13,42 @@ public class Customer extends UserAccount
   //------------------------
 
   //Customer Attributes
-  private String address;
   private int loyaltyPoints;
 
   //Customer Associations
+  private List<Address> shippingAddresses;
   private Cart cart;
-  private List<Order> orders;
+  private List<Order> paidOrders;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Customer(String aUsername, String aPassword, User aUser, String aAddress, int aLoyaltyPoints, Cart aCart)
+  public Customer(String aUsername, String aPassword, User aPerson, int aLoyaltyPoints, Cart aCart)
   {
-    super(aUsername, aPassword, aUser);
-    address = aAddress;
+    super(aUsername, aPassword, aPerson);
     loyaltyPoints = aLoyaltyPoints;
-    if (aCart == null || aCart.getShopper() != null)
+    shippingAddresses = new ArrayList<Address>();
+    if (aCart == null || aCart.getCustomer() != null)
     {
       throw new RuntimeException("Unable to create Customer due to aCart. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     cart = aCart;
-    orders = new ArrayList<Order>();
+    paidOrders = new ArrayList<Order>();
   }
 
-  public Customer(String aUsername, String aPassword, User aUser, String aAddress, int aLoyaltyPoints, double aTotalPriceForCart)
+  public Customer(String aUsername, String aPassword, User aPerson, int aLoyaltyPoints)
   {
-    super(aUsername, aPassword, aUser);
-    address = aAddress;
+    super(aUsername, aPassword, aPerson);
     loyaltyPoints = aLoyaltyPoints;
-    cart = new Cart(aTotalPriceForCart, this);
-    orders = new ArrayList<Order>();
+    shippingAddresses = new ArrayList<Address>();
+    cart = new Cart(this);
+    paidOrders = new ArrayList<Order>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setAddress(String aAddress)
-  {
-    boolean wasSet = false;
-    address = aAddress;
-    wasSet = true;
-    return wasSet;
-  }
 
   public boolean setLoyaltyPoints(int aLoyaltyPoints)
   {
@@ -67,14 +58,39 @@ public class Customer extends UserAccount
     return wasSet;
   }
 
-  public String getAddress()
-  {
-    return address;
-  }
-
   public int getLoyaltyPoints()
   {
     return loyaltyPoints;
+  }
+  /* Code from template association_GetMany */
+  public Address getShippingAddress(int index)
+  {
+    Address aShippingAddress = shippingAddresses.get(index);
+    return aShippingAddress;
+  }
+
+  public List<Address> getShippingAddresses()
+  {
+    List<Address> newShippingAddresses = Collections.unmodifiableList(shippingAddresses);
+    return newShippingAddresses;
+  }
+
+  public int numberOfShippingAddresses()
+  {
+    int number = shippingAddresses.size();
+    return number;
+  }
+
+  public boolean hasShippingAddresses()
+  {
+    boolean has = shippingAddresses.size() > 0;
+    return has;
+  }
+
+  public int indexOfShippingAddress(Address aShippingAddress)
+  {
+    int index = shippingAddresses.indexOf(aShippingAddress);
+    return index;
   }
   /* Code from template association_GetOne */
   public Cart getCart()
@@ -82,120 +98,217 @@ public class Customer extends UserAccount
     return cart;
   }
   /* Code from template association_GetMany */
-  public Order getOrder(int index)
+  public Order getPaidOrder(int index)
   {
-    Order aOrder = orders.get(index);
-    return aOrder;
+    Order aPaidOrder = paidOrders.get(index);
+    return aPaidOrder;
   }
 
-  public List<Order> getOrders()
+  public List<Order> getPaidOrders()
   {
-    List<Order> newOrders = Collections.unmodifiableList(orders);
-    return newOrders;
+    List<Order> newPaidOrders = Collections.unmodifiableList(paidOrders);
+    return newPaidOrders;
   }
 
-  public int numberOfOrders()
+  public int numberOfPaidOrders()
   {
-    int number = orders.size();
+    int number = paidOrders.size();
     return number;
   }
 
-  public boolean hasOrders()
+  public boolean hasPaidOrders()
   {
-    boolean has = orders.size() > 0;
+    boolean has = paidOrders.size() > 0;
     return has;
   }
 
-  public int indexOfOrder(Order aOrder)
+  public int indexOfPaidOrder(Order aPaidOrder)
   {
-    int index = orders.indexOf(aOrder);
+    int index = paidOrders.indexOf(aPaidOrder);
     return index;
   }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfOrders()
+  /* Code from template association_IsNumberOfValidMethod */
+  public boolean isNumberOfShippingAddressesValid()
   {
-    return 0;
+    boolean isValid = numberOfShippingAddresses() >= minimumNumberOfShippingAddresses();
+    return isValid;
   }
-  /* Code from template association_AddManyToOne */
-  public Order addOrder(Date aDateOrdered, int aDaysUntilDelivery, Employee aItemGatherer)
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfShippingAddresses()
   {
-    return new Order(aDateOrdered, aDaysUntilDelivery, this, aItemGatherer);
+    return 1;
+  }
+  /* Code from template association_AddMandatoryManyToOne */
+  public Address addShippingAddress(String aAddressLineOne, String aPostalCode, String aCity, String aCountry)
+  {
+    Address aNewShippingAddress = new Address(aAddressLineOne, aPostalCode, aCity, aCountry, this);
+    return aNewShippingAddress;
   }
 
-  public boolean addOrder(Order aOrder)
+  public boolean addShippingAddress(Address aShippingAddress)
   {
     boolean wasAdded = false;
-    if (orders.contains(aOrder)) { return false; }
-    Customer existingCustomer = aOrder.getCustomer();
+    if (shippingAddresses.contains(aShippingAddress)) { return false; }
+    Customer existingCustomer = aShippingAddress.getCustomer();
     boolean isNewCustomer = existingCustomer != null && !this.equals(existingCustomer);
+
+    if (isNewCustomer && existingCustomer.numberOfShippingAddresses() <= minimumNumberOfShippingAddresses())
+    {
+      return wasAdded;
+    }
     if (isNewCustomer)
     {
-      aOrder.setCustomer(this);
+      aShippingAddress.setCustomer(this);
     }
     else
     {
-      orders.add(aOrder);
+      shippingAddresses.add(aShippingAddress);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeOrder(Order aOrder)
+  public boolean removeShippingAddress(Address aShippingAddress)
   {
     boolean wasRemoved = false;
-    //Unable to remove aOrder, as it must always have a customer
-    if (!this.equals(aOrder.getCustomer()))
+    //Unable to remove aShippingAddress, as it must always have a customer
+    if (this.equals(aShippingAddress.getCustomer()))
     {
-      orders.remove(aOrder);
-      wasRemoved = true;
+      return wasRemoved;
     }
+
+    //customer already at minimum (1)
+    if (numberOfShippingAddresses() <= minimumNumberOfShippingAddresses())
+    {
+      return wasRemoved;
+    }
+
+    shippingAddresses.remove(aShippingAddress);
+    wasRemoved = true;
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addOrderAt(Order aOrder, int index)
+  public boolean addShippingAddressAt(Address aShippingAddress, int index)
   {  
     boolean wasAdded = false;
-    if(addOrder(aOrder))
+    if(addShippingAddress(aShippingAddress))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
-      orders.remove(aOrder);
-      orders.add(index, aOrder);
+      if(index > numberOfShippingAddresses()) { index = numberOfShippingAddresses() - 1; }
+      shippingAddresses.remove(aShippingAddress);
+      shippingAddresses.add(index, aShippingAddress);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveOrderAt(Order aOrder, int index)
+  public boolean addOrMoveShippingAddressAt(Address aShippingAddress, int index)
   {
     boolean wasAdded = false;
-    if(orders.contains(aOrder))
+    if(shippingAddresses.contains(aShippingAddress))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
-      orders.remove(aOrder);
-      orders.add(index, aOrder);
+      if(index > numberOfShippingAddresses()) { index = numberOfShippingAddresses() - 1; }
+      shippingAddresses.remove(aShippingAddress);
+      shippingAddresses.add(index, aShippingAddress);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addOrderAt(aOrder, index);
+      wasAdded = addShippingAddressAt(aShippingAddress, index);
+    }
+    return wasAdded;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfPaidOrders()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public Order addPaidOrder(int aOrderNumber, int aShippingDelay, Manager aManager, Employee aItemGatherer, Cart aPaidCart, Address aDeliveryAddress)
+  {
+    return new Order(aOrderNumber, aShippingDelay, this, aManager, aItemGatherer, aPaidCart, aDeliveryAddress);
+  }
+
+  public boolean addPaidOrder(Order aPaidOrder)
+  {
+    boolean wasAdded = false;
+    if (paidOrders.contains(aPaidOrder)) { return false; }
+    Customer existingCustomer = aPaidOrder.getCustomer();
+    boolean isNewCustomer = existingCustomer != null && !this.equals(existingCustomer);
+    if (isNewCustomer)
+    {
+      aPaidOrder.setCustomer(this);
+    }
+    else
+    {
+      paidOrders.add(aPaidOrder);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removePaidOrder(Order aPaidOrder)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aPaidOrder, as it must always have a customer
+    if (!this.equals(aPaidOrder.getCustomer()))
+    {
+      paidOrders.remove(aPaidOrder);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addPaidOrderAt(Order aPaidOrder, int index)
+  {  
+    boolean wasAdded = false;
+    if(addPaidOrder(aPaidOrder))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfPaidOrders()) { index = numberOfPaidOrders() - 1; }
+      paidOrders.remove(aPaidOrder);
+      paidOrders.add(index, aPaidOrder);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMovePaidOrderAt(Order aPaidOrder, int index)
+  {
+    boolean wasAdded = false;
+    if(paidOrders.contains(aPaidOrder))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfPaidOrders()) { index = numberOfPaidOrders() - 1; }
+      paidOrders.remove(aPaidOrder);
+      paidOrders.add(index, aPaidOrder);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addPaidOrderAt(aPaidOrder, index);
     }
     return wasAdded;
   }
 
   public void delete()
   {
+    for(int i=shippingAddresses.size(); i > 0; i--)
+    {
+      Address aShippingAddress = shippingAddresses.get(i - 1);
+      aShippingAddress.delete();
+    }
     Cart existingCart = cart;
     cart = null;
     if (existingCart != null)
     {
       existingCart.delete();
     }
-    for(int i=orders.size(); i > 0; i--)
+    for(int i=paidOrders.size(); i > 0; i--)
     {
-      Order aOrder = orders.get(i - 1);
-      aOrder.delete();
+      Order aPaidOrder = paidOrders.get(i - 1);
+      aPaidOrder.delete();
     }
     super.delete();
   }
@@ -204,7 +317,6 @@ public class Customer extends UserAccount
   public String toString()
   {
     return super.toString() + "["+
-            "address" + ":" + getAddress()+ "," +
             "loyaltyPoints" + ":" + getLoyaltyPoints()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null");
   }

@@ -4,187 +4,215 @@
 
 import java.util.*;
 
-// line 9 "FashionProjectManagementApp.ump"
+// line 65 "FashionProjectManagementApp.ump"
 public class Cart
 {
+
+  //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum Size { S, M, L, XL }
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
-  //Cart Attributes
-  private double totalPrice;
-
   //Cart Associations
-  private Customer shopper;
-  private List<ClothingItem> items;
+  private Customer customer;
+  private Order placedOrder;
+  private List<CartItem> cartItems;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Cart(double aTotalPrice, Customer aShopper)
+  public Cart(Customer aCustomer)
   {
-    totalPrice = aTotalPrice;
-    if (aShopper == null || aShopper.getCart() != null)
+    if (aCustomer == null || aCustomer.getCart() != null)
     {
-      throw new RuntimeException("Unable to create Cart due to aShopper. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create Cart due to aCustomer. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    shopper = aShopper;
-    items = new ArrayList<ClothingItem>();
+    customer = aCustomer;
+    cartItems = new ArrayList<CartItem>();
   }
 
-  public Cart(double aTotalPrice, String aUsernameForShopper, String aPasswordForShopper, User aUserForShopper, String aAddressForShopper, int aLoyaltyPointsForShopper)
+  public Cart(String aUsernameForCustomer, String aPasswordForCustomer, User aPersonForCustomer, int aLoyaltyPointsForCustomer)
   {
-    totalPrice = aTotalPrice;
-    shopper = new Customer(aUsernameForShopper, aPasswordForShopper, aUserForShopper, aAddressForShopper, aLoyaltyPointsForShopper, this);
-    items = new ArrayList<ClothingItem>();
+    customer = new Customer(aUsernameForCustomer, aPasswordForCustomer, aPersonForCustomer, aLoyaltyPointsForCustomer, this);
+    cartItems = new ArrayList<CartItem>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
-
-  public boolean setTotalPrice(double aTotalPrice)
+  /* Code from template association_GetOne */
+  public Customer getCustomer()
   {
-    boolean wasSet = false;
-    totalPrice = aTotalPrice;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public double getTotalPrice()
-  {
-    return totalPrice;
+    return customer;
   }
   /* Code from template association_GetOne */
-  public Customer getShopper()
+  public Order getPlacedOrder()
   {
-    return shopper;
+    return placedOrder;
+  }
+
+  public boolean hasPlacedOrder()
+  {
+    boolean has = placedOrder != null;
+    return has;
   }
   /* Code from template association_GetMany */
-  public ClothingItem getItem(int index)
+  public CartItem getCartItem(int index)
   {
-    ClothingItem aItem = items.get(index);
-    return aItem;
+    CartItem aCartItem = cartItems.get(index);
+    return aCartItem;
   }
 
-  public List<ClothingItem> getItems()
+  public List<CartItem> getCartItems()
   {
-    List<ClothingItem> newItems = Collections.unmodifiableList(items);
-    return newItems;
+    List<CartItem> newCartItems = Collections.unmodifiableList(cartItems);
+    return newCartItems;
   }
 
-  public int numberOfItems()
+  public int numberOfCartItems()
   {
-    int number = items.size();
+    int number = cartItems.size();
     return number;
   }
 
-  public boolean hasItems()
+  public boolean hasCartItems()
   {
-    boolean has = items.size() > 0;
+    boolean has = cartItems.size() > 0;
     return has;
   }
 
-  public int indexOfItem(ClothingItem aItem)
+  public int indexOfCartItem(CartItem aCartItem)
   {
-    int index = items.indexOf(aItem);
+    int index = cartItems.indexOf(aCartItem);
     return index;
   }
+  /* Code from template association_SetOptionalOneToOne */
+  public boolean setPlacedOrder(Order aNewPlacedOrder)
+  {
+    boolean wasSet = false;
+    if (placedOrder != null && !placedOrder.equals(aNewPlacedOrder) && equals(placedOrder.getPaidCart()))
+    {
+      //Unable to setPlacedOrder, as existing placedOrder would become an orphan
+      return wasSet;
+    }
+
+    placedOrder = aNewPlacedOrder;
+    Cart anOldPaidCart = aNewPlacedOrder != null ? aNewPlacedOrder.getPaidCart() : null;
+
+    if (!this.equals(anOldPaidCart))
+    {
+      if (anOldPaidCart != null)
+      {
+        anOldPaidCart.placedOrder = null;
+      }
+      if (placedOrder != null)
+      {
+        placedOrder.setPaidCart(this);
+      }
+    }
+    wasSet = true;
+    return wasSet;
+  }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfItems()
+  public static int minimumNumberOfCartItems()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ClothingItem addItem(String aName, double aPrice, ClothingItem.Size aSize, int aPointValue, Inventory aInventory)
+  public CartItem addCartItem(int aQuantity, Size aSize, ClothingItem aClothingItem)
   {
-    return new ClothingItem(aName, aPrice, aSize, aPointValue, this, aInventory);
+    return new CartItem(aQuantity, aSize, this, aClothingItem);
   }
 
-  public boolean addItem(ClothingItem aItem)
+  public boolean addCartItem(CartItem aCartItem)
   {
     boolean wasAdded = false;
-    if (items.contains(aItem)) { return false; }
-    Cart existingCart = aItem.getCart();
+    if (cartItems.contains(aCartItem)) { return false; }
+    Cart existingCart = aCartItem.getCart();
     boolean isNewCart = existingCart != null && !this.equals(existingCart);
     if (isNewCart)
     {
-      aItem.setCart(this);
+      aCartItem.setCart(this);
     }
     else
     {
-      items.add(aItem);
+      cartItems.add(aCartItem);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeItem(ClothingItem aItem)
+  public boolean removeCartItem(CartItem aCartItem)
   {
     boolean wasRemoved = false;
-    //Unable to remove aItem, as it must always have a cart
-    if (!this.equals(aItem.getCart()))
+    //Unable to remove aCartItem, as it must always have a cart
+    if (!this.equals(aCartItem.getCart()))
     {
-      items.remove(aItem);
+      cartItems.remove(aCartItem);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addItemAt(ClothingItem aItem, int index)
+  public boolean addCartItemAt(CartItem aCartItem, int index)
   {  
     boolean wasAdded = false;
-    if(addItem(aItem))
+    if(addCartItem(aCartItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfItems()) { index = numberOfItems() - 1; }
-      items.remove(aItem);
-      items.add(index, aItem);
+      if(index > numberOfCartItems()) { index = numberOfCartItems() - 1; }
+      cartItems.remove(aCartItem);
+      cartItems.add(index, aCartItem);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveItemAt(ClothingItem aItem, int index)
+  public boolean addOrMoveCartItemAt(CartItem aCartItem, int index)
   {
     boolean wasAdded = false;
-    if(items.contains(aItem))
+    if(cartItems.contains(aCartItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfItems()) { index = numberOfItems() - 1; }
-      items.remove(aItem);
-      items.add(index, aItem);
+      if(index > numberOfCartItems()) { index = numberOfCartItems() - 1; }
+      cartItems.remove(aCartItem);
+      cartItems.add(index, aCartItem);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addItemAt(aItem, index);
+      wasAdded = addCartItemAt(aCartItem, index);
     }
     return wasAdded;
   }
 
   public void delete()
   {
-    Customer existingShopper = shopper;
-    shopper = null;
-    if (existingShopper != null)
+    Customer existingCustomer = customer;
+    customer = null;
+    if (existingCustomer != null)
     {
-      existingShopper.delete();
+      existingCustomer.delete();
     }
-    for(int i=items.size(); i > 0; i--)
+    Order existingPlacedOrder = placedOrder;
+    placedOrder = null;
+    if (existingPlacedOrder != null)
     {
-      ClothingItem aItem = items.get(i - 1);
-      aItem.delete();
+      existingPlacedOrder.delete();
     }
+    while (cartItems.size() > 0)
+    {
+      CartItem aCartItem = cartItems.get(cartItems.size() - 1);
+      aCartItem.delete();
+      cartItems.remove(aCartItem);
+    }
+    
   }
 
-
-  public String toString()
-  {
-    return super.toString() + "["+
-            "totalPrice" + ":" + getTotalPrice()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "shopper = "+(getShopper()!=null?Integer.toHexString(System.identityHashCode(getShopper())):"null");
-  }
 }

@@ -2,232 +2,334 @@
 /*This code was generated using the UMPLE 1.33.0.6934.a386b0a58 modeling language!*/
 
 
-import java.sql.Date;
 import java.util.*;
 
-// line 47 "FashionProjectManagementApp.ump"
+// line 77 "FashionProjectManagementApp.ump"
 public class Shipment
 {
+
+  //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum Size { S, M, L, XL }
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
   //Shipment Attributes
-  private Date dateOrdered;
-  private Date deliveryDate;
+  private boolean shipped;
 
   //Shipment Associations
-  private FashionStoreManagementApp app;
-  private List<ClothingItem> receivedItems;
+  private List<ShipmentItem> itemsInShipment;
+  private Manager shipmentManager;
+  private List<InventoryItem> updatedInventoryItems;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Shipment(Date aDateOrdered, FashionStoreManagementApp aApp)
+  public Shipment(boolean aShipped, Manager aShipmentManager)
   {
-    dateOrdered = aDateOrdered;
-    deliveryDate = null;
-    boolean didAddApp = setApp(aApp);
-    if (!didAddApp)
+    shipped = aShipped;
+    itemsInShipment = new ArrayList<ShipmentItem>();
+    boolean didAddShipmentManager = setShipmentManager(aShipmentManager);
+    if (!didAddShipmentManager)
     {
-      throw new RuntimeException("Unable to create shipment due to app. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create shipment due to shipmentManager. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    receivedItems = new ArrayList<ClothingItem>();
+    updatedInventoryItems = new ArrayList<InventoryItem>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
 
-  public boolean setDateOrdered(Date aDateOrdered)
+  public boolean setShipped(boolean aShipped)
   {
     boolean wasSet = false;
-    dateOrdered = aDateOrdered;
+    shipped = aShipped;
     wasSet = true;
     return wasSet;
   }
 
-  public boolean setDeliveryDate(Date aDeliveryDate)
+  public boolean getShipped()
   {
-    boolean wasSet = false;
-    deliveryDate = aDeliveryDate;
-    wasSet = true;
-    return wasSet;
+    return shipped;
   }
-
-  public Date getDateOrdered()
+  /* Code from template attribute_IsBoolean */
+  public boolean isShipped()
   {
-    return dateOrdered;
-  }
-
-  /**
-   * always shipped next day
-   */
-  public Date getDeliveryDate()
-  {
-    return deliveryDate;
-  }
-  /* Code from template association_GetOne */
-  public FashionStoreManagementApp getApp()
-  {
-    return app;
+    return shipped;
   }
   /* Code from template association_GetMany */
-  public ClothingItem getReceivedItem(int index)
+  public ShipmentItem getItemsInShipment(int index)
   {
-    ClothingItem aReceivedItem = receivedItems.get(index);
-    return aReceivedItem;
+    ShipmentItem aItemsInShipment = itemsInShipment.get(index);
+    return aItemsInShipment;
   }
 
-  public List<ClothingItem> getReceivedItems()
+  public List<ShipmentItem> getItemsInShipment()
   {
-    List<ClothingItem> newReceivedItems = Collections.unmodifiableList(receivedItems);
-    return newReceivedItems;
+    List<ShipmentItem> newItemsInShipment = Collections.unmodifiableList(itemsInShipment);
+    return newItemsInShipment;
   }
 
-  public int numberOfReceivedItems()
+  public int numberOfItemsInShipment()
   {
-    int number = receivedItems.size();
+    int number = itemsInShipment.size();
     return number;
   }
 
-  public boolean hasReceivedItems()
+  public boolean hasItemsInShipment()
   {
-    boolean has = receivedItems.size() > 0;
+    boolean has = itemsInShipment.size() > 0;
     return has;
   }
 
-  public int indexOfReceivedItem(ClothingItem aReceivedItem)
+  public int indexOfItemsInShipment(ShipmentItem aItemsInShipment)
   {
-    int index = receivedItems.indexOf(aReceivedItem);
+    int index = itemsInShipment.indexOf(aItemsInShipment);
     return index;
   }
+  /* Code from template association_GetOne */
+  public Manager getShipmentManager()
+  {
+    return shipmentManager;
+  }
+  /* Code from template association_GetMany */
+  public InventoryItem getUpdatedInventoryItem(int index)
+  {
+    InventoryItem aUpdatedInventoryItem = updatedInventoryItems.get(index);
+    return aUpdatedInventoryItem;
+  }
+
+  public List<InventoryItem> getUpdatedInventoryItems()
+  {
+    List<InventoryItem> newUpdatedInventoryItems = Collections.unmodifiableList(updatedInventoryItems);
+    return newUpdatedInventoryItems;
+  }
+
+  public int numberOfUpdatedInventoryItems()
+  {
+    int number = updatedInventoryItems.size();
+    return number;
+  }
+
+  public boolean hasUpdatedInventoryItems()
+  {
+    boolean has = updatedInventoryItems.size() > 0;
+    return has;
+  }
+
+  public int indexOfUpdatedInventoryItem(InventoryItem aUpdatedInventoryItem)
+  {
+    int index = updatedInventoryItems.indexOf(aUpdatedInventoryItem);
+    return index;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfItemsInShipment()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public ShipmentItem addItemsInShipment(Size aSize, int aQuantity, ClothingItem aItemToShip)
+  {
+    return new ShipmentItem(aSize, aQuantity, this, aItemToShip);
+  }
+
+  public boolean addItemsInShipment(ShipmentItem aItemsInShipment)
+  {
+    boolean wasAdded = false;
+    if (itemsInShipment.contains(aItemsInShipment)) { return false; }
+    Shipment existingOrderedShipment = aItemsInShipment.getOrderedShipment();
+    boolean isNewOrderedShipment = existingOrderedShipment != null && !this.equals(existingOrderedShipment);
+    if (isNewOrderedShipment)
+    {
+      aItemsInShipment.setOrderedShipment(this);
+    }
+    else
+    {
+      itemsInShipment.add(aItemsInShipment);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeItemsInShipment(ShipmentItem aItemsInShipment)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aItemsInShipment, as it must always have a orderedShipment
+    if (!this.equals(aItemsInShipment.getOrderedShipment()))
+    {
+      itemsInShipment.remove(aItemsInShipment);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addItemsInShipmentAt(ShipmentItem aItemsInShipment, int index)
+  {  
+    boolean wasAdded = false;
+    if(addItemsInShipment(aItemsInShipment))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfItemsInShipment()) { index = numberOfItemsInShipment() - 1; }
+      itemsInShipment.remove(aItemsInShipment);
+      itemsInShipment.add(index, aItemsInShipment);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveItemsInShipmentAt(ShipmentItem aItemsInShipment, int index)
+  {
+    boolean wasAdded = false;
+    if(itemsInShipment.contains(aItemsInShipment))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfItemsInShipment()) { index = numberOfItemsInShipment() - 1; }
+      itemsInShipment.remove(aItemsInShipment);
+      itemsInShipment.add(index, aItemsInShipment);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addItemsInShipmentAt(aItemsInShipment, index);
+    }
+    return wasAdded;
+  }
   /* Code from template association_SetOneToMany */
-  public boolean setApp(FashionStoreManagementApp aApp)
+  public boolean setShipmentManager(Manager aShipmentManager)
   {
     boolean wasSet = false;
-    if (aApp == null)
+    if (aShipmentManager == null)
     {
       return wasSet;
     }
 
-    FashionStoreManagementApp existingApp = app;
-    app = aApp;
-    if (existingApp != null && !existingApp.equals(aApp))
+    Manager existingShipmentManager = shipmentManager;
+    shipmentManager = aShipmentManager;
+    if (existingShipmentManager != null && !existingShipmentManager.equals(aShipmentManager))
     {
-      existingApp.removeShipment(this);
+      existingShipmentManager.removeShipment(this);
     }
-    app.addShipment(this);
+    shipmentManager.addShipment(this);
     wasSet = true;
     return wasSet;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfReceivedItems()
+  public static int minimumNumberOfUpdatedInventoryItems()
   {
     return 0;
   }
   /* Code from template association_AddManyToManyMethod */
-  public boolean addReceivedItem(ClothingItem aReceivedItem)
+  public boolean addUpdatedInventoryItem(InventoryItem aUpdatedInventoryItem)
   {
     boolean wasAdded = false;
-    if (receivedItems.contains(aReceivedItem)) { return false; }
-    receivedItems.add(aReceivedItem);
-    if (aReceivedItem.indexOfShipment(this) != -1)
+    if (updatedInventoryItems.contains(aUpdatedInventoryItem)) { return false; }
+    updatedInventoryItems.add(aUpdatedInventoryItem);
+    if (aUpdatedInventoryItem.indexOfShipment(this) != -1)
     {
       wasAdded = true;
     }
     else
     {
-      wasAdded = aReceivedItem.addShipment(this);
+      wasAdded = aUpdatedInventoryItem.addShipment(this);
       if (!wasAdded)
       {
-        receivedItems.remove(aReceivedItem);
+        updatedInventoryItems.remove(aUpdatedInventoryItem);
       }
     }
     return wasAdded;
   }
   /* Code from template association_RemoveMany */
-  public boolean removeReceivedItem(ClothingItem aReceivedItem)
+  public boolean removeUpdatedInventoryItem(InventoryItem aUpdatedInventoryItem)
   {
     boolean wasRemoved = false;
-    if (!receivedItems.contains(aReceivedItem))
+    if (!updatedInventoryItems.contains(aUpdatedInventoryItem))
     {
       return wasRemoved;
     }
 
-    int oldIndex = receivedItems.indexOf(aReceivedItem);
-    receivedItems.remove(oldIndex);
-    if (aReceivedItem.indexOfShipment(this) == -1)
+    int oldIndex = updatedInventoryItems.indexOf(aUpdatedInventoryItem);
+    updatedInventoryItems.remove(oldIndex);
+    if (aUpdatedInventoryItem.indexOfShipment(this) == -1)
     {
       wasRemoved = true;
     }
     else
     {
-      wasRemoved = aReceivedItem.removeShipment(this);
+      wasRemoved = aUpdatedInventoryItem.removeShipment(this);
       if (!wasRemoved)
       {
-        receivedItems.add(oldIndex,aReceivedItem);
+        updatedInventoryItems.add(oldIndex,aUpdatedInventoryItem);
       }
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addReceivedItemAt(ClothingItem aReceivedItem, int index)
+  public boolean addUpdatedInventoryItemAt(InventoryItem aUpdatedInventoryItem, int index)
   {  
     boolean wasAdded = false;
-    if(addReceivedItem(aReceivedItem))
+    if(addUpdatedInventoryItem(aUpdatedInventoryItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfReceivedItems()) { index = numberOfReceivedItems() - 1; }
-      receivedItems.remove(aReceivedItem);
-      receivedItems.add(index, aReceivedItem);
+      if(index > numberOfUpdatedInventoryItems()) { index = numberOfUpdatedInventoryItems() - 1; }
+      updatedInventoryItems.remove(aUpdatedInventoryItem);
+      updatedInventoryItems.add(index, aUpdatedInventoryItem);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveReceivedItemAt(ClothingItem aReceivedItem, int index)
+  public boolean addOrMoveUpdatedInventoryItemAt(InventoryItem aUpdatedInventoryItem, int index)
   {
     boolean wasAdded = false;
-    if(receivedItems.contains(aReceivedItem))
+    if(updatedInventoryItems.contains(aUpdatedInventoryItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfReceivedItems()) { index = numberOfReceivedItems() - 1; }
-      receivedItems.remove(aReceivedItem);
-      receivedItems.add(index, aReceivedItem);
+      if(index > numberOfUpdatedInventoryItems()) { index = numberOfUpdatedInventoryItems() - 1; }
+      updatedInventoryItems.remove(aUpdatedInventoryItem);
+      updatedInventoryItems.add(index, aUpdatedInventoryItem);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addReceivedItemAt(aReceivedItem, index);
+      wasAdded = addUpdatedInventoryItemAt(aUpdatedInventoryItem, index);
     }
     return wasAdded;
   }
 
   public void delete()
   {
-    FashionStoreManagementApp placeholderApp = app;
-    this.app = null;
-    if(placeholderApp != null)
+    while (itemsInShipment.size() > 0)
     {
-      placeholderApp.removeShipment(this);
+      ShipmentItem aItemsInShipment = itemsInShipment.get(itemsInShipment.size() - 1);
+      aItemsInShipment.delete();
+      itemsInShipment.remove(aItemsInShipment);
     }
-    ArrayList<ClothingItem> copyOfReceivedItems = new ArrayList<ClothingItem>(receivedItems);
-    receivedItems.clear();
-    for(ClothingItem aReceivedItem : copyOfReceivedItems)
+    
+    Manager placeholderShipmentManager = shipmentManager;
+    this.shipmentManager = null;
+    if(placeholderShipmentManager != null)
     {
-      aReceivedItem.removeShipment(this);
+      placeholderShipmentManager.removeShipment(this);
+    }
+    ArrayList<InventoryItem> copyOfUpdatedInventoryItems = new ArrayList<InventoryItem>(updatedInventoryItems);
+    updatedInventoryItems.clear();
+    for(InventoryItem aUpdatedInventoryItem : copyOfUpdatedInventoryItems)
+    {
+      aUpdatedInventoryItem.removeShipment(this);
     }
   }
 
 
   public String toString()
   {
-    return super.toString() + "["+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "dateOrdered" + "=" + (getDateOrdered() != null ? !getDateOrdered().equals(this)  ? getDateOrdered().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "deliveryDate" + "=" + (getDeliveryDate() != null ? !getDeliveryDate().equals(this)  ? getDeliveryDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "app = "+(getApp()!=null?Integer.toHexString(System.identityHashCode(getApp())):"null");
+    return super.toString() + "["+
+            "shipped" + ":" + getShipped()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "shipmentManager = "+(getShipmentManager()!=null?Integer.toHexString(System.identityHashCode(getShipmentManager())):"null");
   }
 }

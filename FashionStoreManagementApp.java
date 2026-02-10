@@ -3,276 +3,280 @@
 
 
 import java.util.*;
-import java.sql.Date;
 
 // line 1 "FashionProjectManagementApp.ump"
 public class FashionStoreManagementApp
 {
 
   //------------------------
+  // ENUMERATIONS
+  //------------------------
+
+  public enum Size { S, M, L, XL }
+
+  //------------------------
   // MEMBER VARIABLES
   //------------------------
 
   //FashionStoreManagementApp Associations
-  private Inventory inventory;
-  private List<User> users;
-  private List<Shipment> shipments;
+  private Manager storeManager;
+  private List<ClothingItem> catalogItems;
+  private List<InventoryItem> stockedItems;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public FashionStoreManagementApp(Inventory aInventory)
+  public FashionStoreManagementApp(Manager aStoreManager)
   {
-    if (aInventory == null || aInventory.getApp() != null)
+    if (aStoreManager == null || aStoreManager.getSystem() != null)
     {
-      throw new RuntimeException("Unable to create FashionStoreManagementApp due to aInventory. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create FashionStoreManagementApp due to aStoreManager. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    inventory = aInventory;
-    users = new ArrayList<User>();
-    shipments = new ArrayList<Shipment>();
+    storeManager = aStoreManager;
+    catalogItems = new ArrayList<ClothingItem>();
+    stockedItems = new ArrayList<InventoryItem>();
   }
 
-  public FashionStoreManagementApp()
+  public FashionStoreManagementApp(String aUsernameForStoreManager, String aPasswordForStoreManager, User aPersonForStoreManager)
   {
-    inventory = new Inventory(this);
-    users = new ArrayList<User>();
-    shipments = new ArrayList<Shipment>();
+    storeManager = new Manager(aUsernameForStoreManager, aPasswordForStoreManager, aPersonForStoreManager, this);
+    catalogItems = new ArrayList<ClothingItem>();
+    stockedItems = new ArrayList<InventoryItem>();
   }
 
   //------------------------
   // INTERFACE
   //------------------------
   /* Code from template association_GetOne */
-  public Inventory getInventory()
+  public Manager getStoreManager()
   {
-    return inventory;
+    return storeManager;
   }
   /* Code from template association_GetMany */
-  public User getUser(int index)
+  public ClothingItem getCatalogItem(int index)
   {
-    User aUser = users.get(index);
-    return aUser;
+    ClothingItem aCatalogItem = catalogItems.get(index);
+    return aCatalogItem;
   }
 
-  public List<User> getUsers()
+  public List<ClothingItem> getCatalogItems()
   {
-    List<User> newUsers = Collections.unmodifiableList(users);
-    return newUsers;
+    List<ClothingItem> newCatalogItems = Collections.unmodifiableList(catalogItems);
+    return newCatalogItems;
   }
 
-  public int numberOfUsers()
+  public int numberOfCatalogItems()
   {
-    int number = users.size();
+    int number = catalogItems.size();
     return number;
   }
 
-  public boolean hasUsers()
+  public boolean hasCatalogItems()
   {
-    boolean has = users.size() > 0;
+    boolean has = catalogItems.size() > 0;
     return has;
   }
 
-  public int indexOfUser(User aUser)
+  public int indexOfCatalogItem(ClothingItem aCatalogItem)
   {
-    int index = users.indexOf(aUser);
+    int index = catalogItems.indexOf(aCatalogItem);
     return index;
   }
   /* Code from template association_GetMany */
-  public Shipment getShipment(int index)
+  public InventoryItem getStockedItem(int index)
   {
-    Shipment aShipment = shipments.get(index);
-    return aShipment;
+    InventoryItem aStockedItem = stockedItems.get(index);
+    return aStockedItem;
   }
 
-  public List<Shipment> getShipments()
+  public List<InventoryItem> getStockedItems()
   {
-    List<Shipment> newShipments = Collections.unmodifiableList(shipments);
-    return newShipments;
+    List<InventoryItem> newStockedItems = Collections.unmodifiableList(stockedItems);
+    return newStockedItems;
   }
 
-  public int numberOfShipments()
+  public int numberOfStockedItems()
   {
-    int number = shipments.size();
+    int number = stockedItems.size();
     return number;
   }
 
-  public boolean hasShipments()
+  public boolean hasStockedItems()
   {
-    boolean has = shipments.size() > 0;
+    boolean has = stockedItems.size() > 0;
     return has;
   }
 
-  public int indexOfShipment(Shipment aShipment)
+  public int indexOfStockedItem(InventoryItem aStockedItem)
   {
-    int index = shipments.indexOf(aShipment);
+    int index = stockedItems.indexOf(aStockedItem);
     return index;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfUsers()
+  public static int minimumNumberOfCatalogItems()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public User addUser()
+  public ClothingItem addCatalogItem(String aName, double aPrice, int aLoyaltyPoints)
   {
-    return new User(this);
+    return new ClothingItem(aName, aPrice, aLoyaltyPoints, this);
   }
 
-  public boolean addUser(User aUser)
+  public boolean addCatalogItem(ClothingItem aCatalogItem)
   {
     boolean wasAdded = false;
-    if (users.contains(aUser)) { return false; }
-    FashionStoreManagementApp existingApp = aUser.getApp();
-    boolean isNewApp = existingApp != null && !this.equals(existingApp);
-    if (isNewApp)
+    if (catalogItems.contains(aCatalogItem)) { return false; }
+    FashionStoreManagementApp existingSystem = aCatalogItem.getSystem();
+    boolean isNewSystem = existingSystem != null && !this.equals(existingSystem);
+    if (isNewSystem)
     {
-      aUser.setApp(this);
+      aCatalogItem.setSystem(this);
     }
     else
     {
-      users.add(aUser);
+      catalogItems.add(aCatalogItem);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeUser(User aUser)
+  public boolean removeCatalogItem(ClothingItem aCatalogItem)
   {
     boolean wasRemoved = false;
-    //Unable to remove aUser, as it must always have a app
-    if (!this.equals(aUser.getApp()))
+    //Unable to remove aCatalogItem, as it must always have a system
+    if (!this.equals(aCatalogItem.getSystem()))
     {
-      users.remove(aUser);
+      catalogItems.remove(aCatalogItem);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addUserAt(User aUser, int index)
+  public boolean addCatalogItemAt(ClothingItem aCatalogItem, int index)
   {  
     boolean wasAdded = false;
-    if(addUser(aUser))
+    if(addCatalogItem(aCatalogItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfUsers()) { index = numberOfUsers() - 1; }
-      users.remove(aUser);
-      users.add(index, aUser);
+      if(index > numberOfCatalogItems()) { index = numberOfCatalogItems() - 1; }
+      catalogItems.remove(aCatalogItem);
+      catalogItems.add(index, aCatalogItem);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveUserAt(User aUser, int index)
+  public boolean addOrMoveCatalogItemAt(ClothingItem aCatalogItem, int index)
   {
     boolean wasAdded = false;
-    if(users.contains(aUser))
+    if(catalogItems.contains(aCatalogItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfUsers()) { index = numberOfUsers() - 1; }
-      users.remove(aUser);
-      users.add(index, aUser);
+      if(index > numberOfCatalogItems()) { index = numberOfCatalogItems() - 1; }
+      catalogItems.remove(aCatalogItem);
+      catalogItems.add(index, aCatalogItem);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addUserAt(aUser, index);
+      wasAdded = addCatalogItemAt(aCatalogItem, index);
     }
     return wasAdded;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfShipments()
+  public static int minimumNumberOfStockedItems()
   {
     return 0;
   }
-  /* Code from template association_AddManyToOne */
-  public Shipment addShipment(Date aDateOrdered)
-  {
-    return new Shipment(aDateOrdered, this);
-  }
-
-  public boolean addShipment(Shipment aShipment)
+  /* Code from template association_AddManyToOptionalOne */
+  public boolean addStockedItem(InventoryItem aStockedItem)
   {
     boolean wasAdded = false;
-    if (shipments.contains(aShipment)) { return false; }
-    FashionStoreManagementApp existingApp = aShipment.getApp();
-    boolean isNewApp = existingApp != null && !this.equals(existingApp);
-    if (isNewApp)
+    if (stockedItems.contains(aStockedItem)) { return false; }
+    FashionStoreManagementApp existingSystem = aStockedItem.getSystem();
+    if (existingSystem == null)
     {
-      aShipment.setApp(this);
+      aStockedItem.setSystem(this);
+    }
+    else if (!this.equals(existingSystem))
+    {
+      existingSystem.removeStockedItem(aStockedItem);
+      addStockedItem(aStockedItem);
     }
     else
     {
-      shipments.add(aShipment);
+      stockedItems.add(aStockedItem);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeShipment(Shipment aShipment)
+  public boolean removeStockedItem(InventoryItem aStockedItem)
   {
     boolean wasRemoved = false;
-    //Unable to remove aShipment, as it must always have a app
-    if (!this.equals(aShipment.getApp()))
+    if (stockedItems.contains(aStockedItem))
     {
-      shipments.remove(aShipment);
+      stockedItems.remove(aStockedItem);
+      aStockedItem.setSystem(null);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addShipmentAt(Shipment aShipment, int index)
+  public boolean addStockedItemAt(InventoryItem aStockedItem, int index)
   {  
     boolean wasAdded = false;
-    if(addShipment(aShipment))
+    if(addStockedItem(aStockedItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfShipments()) { index = numberOfShipments() - 1; }
-      shipments.remove(aShipment);
-      shipments.add(index, aShipment);
+      if(index > numberOfStockedItems()) { index = numberOfStockedItems() - 1; }
+      stockedItems.remove(aStockedItem);
+      stockedItems.add(index, aStockedItem);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveShipmentAt(Shipment aShipment, int index)
+  public boolean addOrMoveStockedItemAt(InventoryItem aStockedItem, int index)
   {
     boolean wasAdded = false;
-    if(shipments.contains(aShipment))
+    if(stockedItems.contains(aStockedItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfShipments()) { index = numberOfShipments() - 1; }
-      shipments.remove(aShipment);
-      shipments.add(index, aShipment);
+      if(index > numberOfStockedItems()) { index = numberOfStockedItems() - 1; }
+      stockedItems.remove(aStockedItem);
+      stockedItems.add(index, aStockedItem);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addShipmentAt(aShipment, index);
+      wasAdded = addStockedItemAt(aStockedItem, index);
     }
     return wasAdded;
   }
 
   public void delete()
   {
-    Inventory existingInventory = inventory;
-    inventory = null;
-    if (existingInventory != null)
+    Manager existingStoreManager = storeManager;
+    storeManager = null;
+    if (existingStoreManager != null)
     {
-      existingInventory.delete();
+      existingStoreManager.delete();
     }
-    while (users.size() > 0)
+    while (catalogItems.size() > 0)
     {
-      User aUser = users.get(users.size() - 1);
-      aUser.delete();
-      users.remove(aUser);
+      ClothingItem aCatalogItem = catalogItems.get(catalogItems.size() - 1);
+      aCatalogItem.delete();
+      catalogItems.remove(aCatalogItem);
     }
     
-    while (shipments.size() > 0)
+    while (stockedItems.size() > 0)
     {
-      Shipment aShipment = shipments.get(shipments.size() - 1);
-      aShipment.delete();
-      shipments.remove(aShipment);
+      InventoryItem aStockedItem = stockedItems.get(stockedItems.size() - 1);
+      aStockedItem.delete();
+      stockedItems.remove(aStockedItem);
     }
     
   }

@@ -14,3 +14,14 @@
 /SeasonalItem$Season.class
 /LimitedStatus.class
 /User.class
+/AccountType.class
+/Address.class
+/Cart$Size.class
+/CartItem$Size.class
+/CartItem.class
+/FashionStoreManagementApp$Size.class
+/InventoryItem$Size.class
+/InventoryItem.class
+/Shipment$Size.class
+/ShipmentItem$Size.class
+/ShipmentItem.class

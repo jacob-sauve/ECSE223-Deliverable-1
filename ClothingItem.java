@@ -3,9 +3,8 @@
 
 
 import java.util.*;
-import java.sql.Date;
 
-// line 53 "FashionProjectManagementApp.ump"
+// line 38 "FashionProjectManagementApp.ump"
 public class ClothingItem
 {
 
@@ -28,44 +27,41 @@ public class ClothingItem
   //ClothingItem Attributes
   private String name;
   private double price;
-  private Size size;
-  private int pointValue;
+  private int loyaltyPoints;
 
   //ClothingItem Associations
-  private Cart cart;
-  private Inventory inventory;
-  private List<Order> orders;
-  private List<Shipment> shipments;
-  private LimitedStatus limitedStatus;
+  private List<InventoryItem> stockedSizes;
+  private List<CartItem> cartItems;
+  private FashionStoreManagementApp system;
+  private List<ShipmentItem> specificItem;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ClothingItem(String aName, double aPrice, Size aSize, int aPointValue, Cart aCart, Inventory aInventory)
+  public ClothingItem(String aName, double aPrice, int aLoyaltyPoints, FashionStoreManagementApp aSystem)
   {
     price = aPrice;
-    size = aSize;
-    pointValue = aPointValue;
+    loyaltyPoints = aLoyaltyPoints;
     if (!setName(aName))
     {
       throw new RuntimeException("Cannot create due to duplicate name. See http://manual.umple.org?RE003ViolationofUniqueness.html");
     }
-    boolean didAddCart = setCart(aCart);
-    if (!didAddCart)
+    stockedSizes = new ArrayList<InventoryItem>();
+    cartItems = new ArrayList<CartItem>();
+    boolean didAddSystem = setSystem(aSystem);
+    if (!didAddSystem)
     {
-      throw new RuntimeException("Unable to create item due to cart. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create catalogItem due to system. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    boolean didAddInventory = setInventory(aInventory);
-    if (!didAddInventory)
+    specificItem = new ArrayList<ShipmentItem>();
+    if (aLoyaltyPoints<1||aLoyaltyPoints>5)
     {
-      throw new RuntimeException("Unable to create stockedItem due to inventory. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Please provide a valid loyaltyPoints [loyaltyPoints>=1&&loyaltyPoints<=5]");
     }
-    orders = new ArrayList<Order>();
-    shipments = new ArrayList<Shipment>();
-    if (aPointValue<1||aPointValue>5)
+    if (aLoyaltyPoints<1||aLoyaltyPoints>5)
     {
-      throw new RuntimeException("Please provide a valid pointValue [pointValue>=1&&pointValue<=5]");
+      throw new RuntimeException("Please provide a valid loyaltyPoints [loyaltyPoints>=1&&loyaltyPoints<=5]");
     }
   }
 
@@ -100,21 +96,16 @@ public class ClothingItem
     return wasSet;
   }
 
-  public boolean setSize(Size aSize)
+  public boolean setLoyaltyPoints(int aLoyaltyPoints)
   {
     boolean wasSet = false;
-    size = aSize;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public boolean setPointValue(int aPointValue)
-  {
-    boolean wasSet = false;
-    if (aPointValue>=1&&aPointValue<=5)
+    if (aLoyaltyPoints>=1&&aLoyaltyPoints<=5)
     {
-    pointValue = aPointValue;
+    if (aLoyaltyPoints>=1&&aLoyaltyPoints<=5)
+    {
+    loyaltyPoints = aLoyaltyPoints;
     wasSet = true;
+    }
     }
     return wasSet;
   }
@@ -139,358 +130,407 @@ public class ClothingItem
     return price;
   }
 
-  public Size getSize()
+  public int getLoyaltyPoints()
   {
-    return size;
-  }
-
-  public int getPointValue()
-  {
-    return pointValue;
-  }
-  /* Code from template association_GetOne */
-  public Cart getCart()
-  {
-    return cart;
-  }
-  /* Code from template association_GetOne */
-  public Inventory getInventory()
-  {
-    return inventory;
+    return loyaltyPoints;
   }
   /* Code from template association_GetMany */
-  public Order getOrder(int index)
+  public InventoryItem getStockedSize(int index)
   {
-    Order aOrder = orders.get(index);
-    return aOrder;
+    InventoryItem aStockedSize = stockedSizes.get(index);
+    return aStockedSize;
   }
 
-  public List<Order> getOrders()
+  public List<InventoryItem> getStockedSizes()
   {
-    List<Order> newOrders = Collections.unmodifiableList(orders);
-    return newOrders;
+    List<InventoryItem> newStockedSizes = Collections.unmodifiableList(stockedSizes);
+    return newStockedSizes;
   }
 
-  public int numberOfOrders()
+  public int numberOfStockedSizes()
   {
-    int number = orders.size();
+    int number = stockedSizes.size();
     return number;
   }
 
-  public boolean hasOrders()
+  public boolean hasStockedSizes()
   {
-    boolean has = orders.size() > 0;
+    boolean has = stockedSizes.size() > 0;
     return has;
   }
 
-  public int indexOfOrder(Order aOrder)
+  public int indexOfStockedSize(InventoryItem aStockedSize)
   {
-    int index = orders.indexOf(aOrder);
+    int index = stockedSizes.indexOf(aStockedSize);
     return index;
   }
   /* Code from template association_GetMany */
-  public Shipment getShipment(int index)
+  public CartItem getCartItem(int index)
   {
-    Shipment aShipment = shipments.get(index);
-    return aShipment;
+    CartItem aCartItem = cartItems.get(index);
+    return aCartItem;
   }
 
-  public List<Shipment> getShipments()
+  public List<CartItem> getCartItems()
   {
-    List<Shipment> newShipments = Collections.unmodifiableList(shipments);
-    return newShipments;
+    List<CartItem> newCartItems = Collections.unmodifiableList(cartItems);
+    return newCartItems;
   }
 
-  public int numberOfShipments()
+  public int numberOfCartItems()
   {
-    int number = shipments.size();
+    int number = cartItems.size();
     return number;
   }
 
-  public boolean hasShipments()
+  public boolean hasCartItems()
   {
-    boolean has = shipments.size() > 0;
+    boolean has = cartItems.size() > 0;
     return has;
   }
 
-  public int indexOfShipment(Shipment aShipment)
+  public int indexOfCartItem(CartItem aCartItem)
   {
-    int index = shipments.indexOf(aShipment);
+    int index = cartItems.indexOf(aCartItem);
     return index;
   }
   /* Code from template association_GetOne */
-  public LimitedStatus getLimitedStatus()
+  public FashionStoreManagementApp getSystem()
   {
-    return limitedStatus;
+    return system;
+  }
+  /* Code from template association_GetMany */
+  public ShipmentItem getSpecificItem(int index)
+  {
+    ShipmentItem aSpecificItem = specificItem.get(index);
+    return aSpecificItem;
   }
 
-  public boolean hasLimitedStatus()
+  public List<ShipmentItem> getSpecificItem()
   {
-    boolean has = limitedStatus != null;
+    List<ShipmentItem> newSpecificItem = Collections.unmodifiableList(specificItem);
+    return newSpecificItem;
+  }
+
+  public int numberOfSpecificItem()
+  {
+    int number = specificItem.size();
+    return number;
+  }
+
+  public boolean hasSpecificItem()
+  {
+    boolean has = specificItem.size() > 0;
     return has;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setCart(Cart aCart)
-  {
-    boolean wasSet = false;
-    if (aCart == null)
-    {
-      return wasSet;
-    }
 
-    Cart existingCart = cart;
-    cart = aCart;
-    if (existingCart != null && !existingCart.equals(aCart))
-    {
-      existingCart.removeItem(this);
-    }
-    cart.addItem(this);
-    wasSet = true;
-    return wasSet;
+  public int indexOfSpecificItem(ShipmentItem aSpecificItem)
+  {
+    int index = specificItem.indexOf(aSpecificItem);
+    return index;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setInventory(Inventory aInventory)
+  /* Code from template association_IsNumberOfValidMethod */
+  public boolean isNumberOfStockedSizesValid()
   {
-    boolean wasSet = false;
-    if (aInventory == null)
-    {
-      return wasSet;
-    }
-
-    Inventory existingInventory = inventory;
-    inventory = aInventory;
-    if (existingInventory != null && !existingInventory.equals(aInventory))
-    {
-      existingInventory.removeStockedItem(this);
-    }
-    inventory.addStockedItem(this);
-    wasSet = true;
-    return wasSet;
+    boolean isValid = numberOfStockedSizes() >= minimumNumberOfStockedSizes() && numberOfStockedSizes() <= maximumNumberOfStockedSizes();
+    return isValid;
+  }
+  /* Code from template association_RequiredNumberOfMethod */
+  public static int requiredNumberOfStockedSizes()
+  {
+    return 4;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfOrders()
+  public static int minimumNumberOfStockedSizes()
   {
-    return 0;
+    return 4;
   }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addOrder(Order aOrder)
+  /* Code from template association_MaximumNumberOfMethod */
+  public static int maximumNumberOfStockedSizes()
   {
-    boolean wasAdded = false;
-    if (orders.contains(aOrder)) { return false; }
-    orders.add(aOrder);
-    if (aOrder.indexOfRequestedItem(this) != -1)
+    return 4;
+  }
+  /* Code from template association_AddMNToOnlyOne */
+  public InventoryItem addStockedSize(int aQuantity, Size aSize)
+  {
+    if (numberOfStockedSizes() >= maximumNumberOfStockedSizes())
     {
-      wasAdded = true;
+      return null;
     }
     else
     {
-      wasAdded = aOrder.addRequestedItem(this);
-      if (!wasAdded)
-      {
-        orders.remove(aOrder);
-      }
+      return new InventoryItem(aQuantity, aSize, this);
     }
+  }
+
+  public boolean addStockedSize(InventoryItem aStockedSize)
+  {
+    boolean wasAdded = false;
+    if (stockedSizes.contains(aStockedSize)) { return false; }
+    if (numberOfStockedSizes() >= maximumNumberOfStockedSizes())
+    {
+      return wasAdded;
+    }
+
+    ClothingItem existingCatalogItem = aStockedSize.getCatalogItem();
+    boolean isNewCatalogItem = existingCatalogItem != null && !this.equals(existingCatalogItem);
+
+    if (isNewCatalogItem && existingCatalogItem.numberOfStockedSizes() <= minimumNumberOfStockedSizes())
+    {
+      return wasAdded;
+    }
+
+    if (isNewCatalogItem)
+    {
+      aStockedSize.setCatalogItem(this);
+    }
+    else
+    {
+      stockedSizes.add(aStockedSize);
+    }
+    wasAdded = true;
     return wasAdded;
   }
-  /* Code from template association_RemoveMany */
-  public boolean removeOrder(Order aOrder)
+
+  public boolean removeStockedSize(InventoryItem aStockedSize)
   {
     boolean wasRemoved = false;
-    if (!orders.contains(aOrder))
+    //Unable to remove aStockedSize, as it must always have a catalogItem
+    if (this.equals(aStockedSize.getCatalogItem()))
     {
       return wasRemoved;
     }
 
-    int oldIndex = orders.indexOf(aOrder);
-    orders.remove(oldIndex);
-    if (aOrder.indexOfRequestedItem(this) == -1)
-    {
-      wasRemoved = true;
-    }
-    else
-    {
-      wasRemoved = aOrder.removeRequestedItem(this);
-      if (!wasRemoved)
-      {
-        orders.add(oldIndex,aOrder);
-      }
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addOrderAt(Order aOrder, int index)
-  {  
-    boolean wasAdded = false;
-    if(addOrder(aOrder))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
-      orders.remove(aOrder);
-      orders.add(index, aOrder);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveOrderAt(Order aOrder, int index)
-  {
-    boolean wasAdded = false;
-    if(orders.contains(aOrder))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfOrders()) { index = numberOfOrders() - 1; }
-      orders.remove(aOrder);
-      orders.add(index, aOrder);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addOrderAt(aOrder, index);
-    }
-    return wasAdded;
-  }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfShipments()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addShipment(Shipment aShipment)
-  {
-    boolean wasAdded = false;
-    if (shipments.contains(aShipment)) { return false; }
-    shipments.add(aShipment);
-    if (aShipment.indexOfReceivedItem(this) != -1)
-    {
-      wasAdded = true;
-    }
-    else
-    {
-      wasAdded = aShipment.addReceivedItem(this);
-      if (!wasAdded)
-      {
-        shipments.remove(aShipment);
-      }
-    }
-    return wasAdded;
-  }
-  /* Code from template association_RemoveMany */
-  public boolean removeShipment(Shipment aShipment)
-  {
-    boolean wasRemoved = false;
-    if (!shipments.contains(aShipment))
+    //catalogItem already at minimum (4)
+    if (numberOfStockedSizes() <= minimumNumberOfStockedSizes())
     {
       return wasRemoved;
     }
-
-    int oldIndex = shipments.indexOf(aShipment);
-    shipments.remove(oldIndex);
-    if (aShipment.indexOfReceivedItem(this) == -1)
+    stockedSizes.remove(aStockedSize);
+    wasRemoved = true;
+    return wasRemoved;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfCartItems()
+  {
+    return 0;
+  }
+  /* Code from template association_MaximumNumberOfMethod */
+  public static int maximumNumberOfCartItems()
+  {
+    return 4;
+  }
+  /* Code from template association_AddOptionalNToOne */
+  public CartItem addCartItem(int aQuantity, Size aSize, Cart aCart)
+  {
+    if (numberOfCartItems() >= maximumNumberOfCartItems())
     {
-      wasRemoved = true;
+      return null;
     }
     else
     {
-      wasRemoved = aShipment.removeReceivedItem(this);
-      if (!wasRemoved)
-      {
-        shipments.add(oldIndex,aShipment);
-      }
+      return new CartItem(aQuantity, aSize, aCart, this);
+    }
+  }
+
+  public boolean addCartItem(CartItem aCartItem)
+  {
+    boolean wasAdded = false;
+    if (cartItems.contains(aCartItem)) { return false; }
+    if (numberOfCartItems() >= maximumNumberOfCartItems())
+    {
+      return wasAdded;
+    }
+
+    ClothingItem existingClothingItem = aCartItem.getClothingItem();
+    boolean isNewClothingItem = existingClothingItem != null && !this.equals(existingClothingItem);
+    if (isNewClothingItem)
+    {
+      aCartItem.setClothingItem(this);
+    }
+    else
+    {
+      cartItems.add(aCartItem);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeCartItem(CartItem aCartItem)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aCartItem, as it must always have a clothingItem
+    if (!this.equals(aCartItem.getClothingItem()))
+    {
+      cartItems.remove(aCartItem);
+      wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addShipmentAt(Shipment aShipment, int index)
+  public boolean addCartItemAt(CartItem aCartItem, int index)
   {  
     boolean wasAdded = false;
-    if(addShipment(aShipment))
+    if(addCartItem(aCartItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfShipments()) { index = numberOfShipments() - 1; }
-      shipments.remove(aShipment);
-      shipments.add(index, aShipment);
+      if(index > numberOfCartItems()) { index = numberOfCartItems() - 1; }
+      cartItems.remove(aCartItem);
+      cartItems.add(index, aCartItem);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveShipmentAt(Shipment aShipment, int index)
+  public boolean addOrMoveCartItemAt(CartItem aCartItem, int index)
   {
     boolean wasAdded = false;
-    if(shipments.contains(aShipment))
+    if(cartItems.contains(aCartItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfShipments()) { index = numberOfShipments() - 1; }
-      shipments.remove(aShipment);
-      shipments.add(index, aShipment);
+      if(index > numberOfCartItems()) { index = numberOfCartItems() - 1; }
+      cartItems.remove(aCartItem);
+      cartItems.add(index, aCartItem);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addShipmentAt(aShipment, index);
+      wasAdded = addCartItemAt(aCartItem, index);
     }
     return wasAdded;
   }
-  /* Code from template association_SetOptionalOneToOne */
-  public boolean setLimitedStatus(LimitedStatus aNewLimitedStatus)
+  /* Code from template association_SetOneToMany */
+  public boolean setSystem(FashionStoreManagementApp aSystem)
   {
     boolean wasSet = false;
-    if (limitedStatus != null && !limitedStatus.equals(aNewLimitedStatus) && equals(limitedStatus.getLimitedItem()))
+    if (aSystem == null)
     {
-      //Unable to setLimitedStatus, as existing limitedStatus would become an orphan
       return wasSet;
     }
 
-    limitedStatus = aNewLimitedStatus;
-    ClothingItem anOldLimitedItem = aNewLimitedStatus != null ? aNewLimitedStatus.getLimitedItem() : null;
-
-    if (!this.equals(anOldLimitedItem))
+    FashionStoreManagementApp existingSystem = system;
+    system = aSystem;
+    if (existingSystem != null && !existingSystem.equals(aSystem))
     {
-      if (anOldLimitedItem != null)
-      {
-        anOldLimitedItem.limitedStatus = null;
-      }
-      if (limitedStatus != null)
-      {
-        limitedStatus.setLimitedItem(this);
-      }
+      existingSystem.removeCatalogItem(this);
     }
+    system.addCatalogItem(this);
     wasSet = true;
     return wasSet;
+  }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfSpecificItem()
+  {
+    return 0;
+  }
+  /* Code from template association_MaximumNumberOfMethod */
+  public static int maximumNumberOfSpecificItem()
+  {
+    return 4;
+  }
+  /* Code from template association_AddOptionalNToOne */
+  public ShipmentItem addSpecificItem(Size aSize, int aQuantity, Shipment aOrderedShipment)
+  {
+    if (numberOfSpecificItem() >= maximumNumberOfSpecificItem())
+    {
+      return null;
+    }
+    else
+    {
+      return new ShipmentItem(aSize, aQuantity, aOrderedShipment, this);
+    }
+  }
+
+  public boolean addSpecificItem(ShipmentItem aSpecificItem)
+  {
+    boolean wasAdded = false;
+    if (specificItem.contains(aSpecificItem)) { return false; }
+    if (numberOfSpecificItem() >= maximumNumberOfSpecificItem())
+    {
+      return wasAdded;
+    }
+
+    ClothingItem existingItemToShip = aSpecificItem.getItemToShip();
+    boolean isNewItemToShip = existingItemToShip != null && !this.equals(existingItemToShip);
+    if (isNewItemToShip)
+    {
+      aSpecificItem.setItemToShip(this);
+    }
+    else
+    {
+      specificItem.add(aSpecificItem);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeSpecificItem(ShipmentItem aSpecificItem)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aSpecificItem, as it must always have a itemToShip
+    if (!this.equals(aSpecificItem.getItemToShip()))
+    {
+      specificItem.remove(aSpecificItem);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addSpecificItemAt(ShipmentItem aSpecificItem, int index)
+  {  
+    boolean wasAdded = false;
+    if(addSpecificItem(aSpecificItem))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfSpecificItem()) { index = numberOfSpecificItem() - 1; }
+      specificItem.remove(aSpecificItem);
+      specificItem.add(index, aSpecificItem);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveSpecificItemAt(ShipmentItem aSpecificItem, int index)
+  {
+    boolean wasAdded = false;
+    if(specificItem.contains(aSpecificItem))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfSpecificItem()) { index = numberOfSpecificItem() - 1; }
+      specificItem.remove(aSpecificItem);
+      specificItem.add(index, aSpecificItem);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addSpecificItemAt(aSpecificItem, index);
+    }
+    return wasAdded;
   }
 
   public void delete()
   {
     clothingitemsByName.remove(getName());
-    Cart placeholderCart = cart;
-    this.cart = null;
-    if(placeholderCart != null)
+    for(int i=stockedSizes.size(); i > 0; i--)
     {
-      placeholderCart.removeItem(this);
+      InventoryItem aStockedSize = stockedSizes.get(i - 1);
+      aStockedSize.delete();
     }
-    Inventory placeholderInventory = inventory;
-    this.inventory = null;
-    if(placeholderInventory != null)
+    for(int i=cartItems.size(); i > 0; i--)
     {
-      placeholderInventory.removeStockedItem(this);
+      CartItem aCartItem = cartItems.get(i - 1);
+      aCartItem.delete();
     }
-    ArrayList<Order> copyOfOrders = new ArrayList<Order>(orders);
-    orders.clear();
-    for(Order aOrder : copyOfOrders)
+    FashionStoreManagementApp placeholderSystem = system;
+    this.system = null;
+    if(placeholderSystem != null)
     {
-      aOrder.removeRequestedItem(this);
+      placeholderSystem.removeCatalogItem(this);
     }
-    ArrayList<Shipment> copyOfShipments = new ArrayList<Shipment>(shipments);
-    shipments.clear();
-    for(Shipment aShipment : copyOfShipments)
+    for(int i=specificItem.size(); i > 0; i--)
     {
-      aShipment.removeReceivedItem(this);
-    }
-    LimitedStatus existingLimitedStatus = limitedStatus;
-    limitedStatus = null;
-    if (existingLimitedStatus != null)
-    {
-      existingLimitedStatus.delete();
+      ShipmentItem aSpecificItem = specificItem.get(i - 1);
+      aSpecificItem.delete();
     }
   }
 
@@ -500,10 +540,7 @@ public class ClothingItem
     return super.toString() + "["+
             "name" + ":" + getName()+ "," +
             "price" + ":" + getPrice()+ "," +
-            "pointValue" + ":" + getPointValue()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
-            "  " + "cart = "+(getCart()!=null?Integer.toHexString(System.identityHashCode(getCart())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "limitedStatus = "+(getLimitedStatus()!=null?Integer.toHexString(System.identityHashCode(getLimitedStatus())):"null");
+            "loyaltyPoints" + ":" + getLoyaltyPoints()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "system = "+(getSystem()!=null?Integer.toHexString(System.identityHashCode(getSystem())):"null");
   }
 }

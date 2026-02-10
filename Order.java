@@ -2,10 +2,9 @@
 /*This code was generated using the UMPLE 1.33.0.6934.a386b0a58 modeling language!*/
 
 
-import java.sql.Date;
 import java.util.*;
 
-// line 13 "FashionProjectManagementApp.ump"
+// line 69 "FashionProjectManagementApp.ump"
 public class Order
 {
 
@@ -13,51 +12,62 @@ public class Order
   // STATIC VARIABLES
   //------------------------
 
-  private static int nextOrderNumber = 1;
+  private static Map<Integer, Order> ordersByOrderNumber = new HashMap<Integer, Order>();
 
   //------------------------
   // MEMBER VARIABLES
   //------------------------
 
   //Order Attributes
-  private Date dateOrdered;
-  private int daysUntilDelivery;
-
-  //Autounique Attributes
-
-  /**
-   * auto-incremented unique Integer
-   */
   private int orderNumber;
+  private int shippingDelay;
 
   //Order Associations
   private Customer customer;
-  private List<ClothingItem> requestedItems;
+  private Manager manager;
   private Employee itemGatherer;
+  private Cart paidCart;
+  private Address deliveryAddress;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Order(Date aDateOrdered, int aDaysUntilDelivery, Customer aCustomer, Employee aItemGatherer)
+  public Order(int aOrderNumber, int aShippingDelay, Customer aCustomer, Manager aManager, Employee aItemGatherer, Cart aPaidCart, Address aDeliveryAddress)
   {
-    dateOrdered = aDateOrdered;
-    daysUntilDelivery = aDaysUntilDelivery;
-    orderNumber = nextOrderNumber++;
+    shippingDelay = aShippingDelay;
+    if (!setOrderNumber(aOrderNumber))
+    {
+      throw new RuntimeException("Cannot create due to duplicate orderNumber. See http://manual.umple.org?RE003ViolationofUniqueness.html");
+    }
     boolean didAddCustomer = setCustomer(aCustomer);
     if (!didAddCustomer)
     {
-      throw new RuntimeException("Unable to create order due to customer. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create paidOrder due to customer. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    requestedItems = new ArrayList<ClothingItem>();
+    boolean didAddManager = setManager(aManager);
+    if (!didAddManager)
+    {
+      throw new RuntimeException("Unable to create ordersToAssign due to manager. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
     boolean didAddItemGatherer = setItemGatherer(aItemGatherer);
     if (!didAddItemGatherer)
     {
-      throw new RuntimeException("Unable to create assignedOrder due to itemGatherer. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create ordersToAssemble due to itemGatherer. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    if (aDaysUntilDelivery<0||aDaysUntilDelivery>3)
+    boolean didAddPaidCart = setPaidCart(aPaidCart);
+    if (!didAddPaidCart)
     {
-      throw new RuntimeException("Please provide a valid daysUntilDelivery [daysUntilDelivery>=0&&daysUntilDelivery<=3]");
+      throw new RuntimeException("Unable to create placedOrder due to paidCart. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddDeliveryAddress = setDeliveryAddress(aDeliveryAddress);
+    if (!didAddDeliveryAddress)
+    {
+      throw new RuntimeException("Unable to create order due to deliveryAddress. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    if (aShippingDelay<0||aShippingDelay>3)
+    {
+      throw new RuntimeException("Please provide a valid shippingDelay [shippingDelay>=0&&shippingDelay<=3]");
     }
   }
 
@@ -65,81 +75,79 @@ public class Order
   // INTERFACE
   //------------------------
 
-  public boolean setDateOrdered(Date aDateOrdered)
+  public boolean setOrderNumber(int aOrderNumber)
   {
     boolean wasSet = false;
-    dateOrdered = aDateOrdered;
+    Integer anOldOrderNumber = getOrderNumber();
+    if (anOldOrderNumber != null && anOldOrderNumber.equals(aOrderNumber)) {
+      return true;
+    }
+    if (hasWithOrderNumber(aOrderNumber)) {
+      return wasSet;
+    }
+    orderNumber = aOrderNumber;
     wasSet = true;
+    if (anOldOrderNumber != null) {
+      ordersByOrderNumber.remove(anOldOrderNumber);
+    }
+    ordersByOrderNumber.put(aOrderNumber, this);
     return wasSet;
   }
 
-  public boolean setDaysUntilDelivery(int aDaysUntilDelivery)
+  public boolean setShippingDelay(int aShippingDelay)
   {
     boolean wasSet = false;
-    if (aDaysUntilDelivery>=0&&aDaysUntilDelivery<=3)
+    if (aShippingDelay>=0&&aShippingDelay<=3)
     {
-    daysUntilDelivery = aDaysUntilDelivery;
+    shippingDelay = aShippingDelay;
     wasSet = true;
     }
     return wasSet;
   }
 
-  public Date getDateOrdered()
-  {
-    return dateOrdered;
-  }
-
-  public int getDaysUntilDelivery()
-  {
-    return daysUntilDelivery;
-  }
-
-  /**
-   * auto-incremented unique Integer
-   */
   public int getOrderNumber()
   {
     return orderNumber;
+  }
+  /* Code from template attribute_GetUnique */
+  public static Order getWithOrderNumber(int aOrderNumber)
+  {
+    return ordersByOrderNumber.get(aOrderNumber);
+  }
+  /* Code from template attribute_HasUnique */
+  public static boolean hasWithOrderNumber(int aOrderNumber)
+  {
+    return getWithOrderNumber(aOrderNumber) != null;
+  }
+
+  public int getShippingDelay()
+  {
+    return shippingDelay;
   }
   /* Code from template association_GetOne */
   public Customer getCustomer()
   {
     return customer;
   }
-  /* Code from template association_GetMany */
-  public ClothingItem getRequestedItem(int index)
+  /* Code from template association_GetOne */
+  public Manager getManager()
   {
-    ClothingItem aRequestedItem = requestedItems.get(index);
-    return aRequestedItem;
-  }
-
-  public List<ClothingItem> getRequestedItems()
-  {
-    List<ClothingItem> newRequestedItems = Collections.unmodifiableList(requestedItems);
-    return newRequestedItems;
-  }
-
-  public int numberOfRequestedItems()
-  {
-    int number = requestedItems.size();
-    return number;
-  }
-
-  public boolean hasRequestedItems()
-  {
-    boolean has = requestedItems.size() > 0;
-    return has;
-  }
-
-  public int indexOfRequestedItem(ClothingItem aRequestedItem)
-  {
-    int index = requestedItems.indexOf(aRequestedItem);
-    return index;
+    return manager;
   }
   /* Code from template association_GetOne */
   public Employee getItemGatherer()
   {
     return itemGatherer;
+  }
+  /* Code from template association_GetOne */
+  public Cart getPaidCart()
+  {
+    return paidCart;
+  }
+  /* Code from template association_GetOne */
+  public Address getDeliveryAddress()
+  {
+    return deliveryAddress;
   }
   /* Code from template association_SetOneToMany */
   public boolean setCustomer(Customer aCustomer)
@@ -154,93 +162,30 @@ public class Order
     customer = aCustomer;
     if (existingCustomer != null && !existingCustomer.equals(aCustomer))
     {
-      existingCustomer.removeOrder(this);
+      existingCustomer.removePaidOrder(this);
     }
-    customer.addOrder(this);
+    customer.addPaidOrder(this);
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfRequestedItems()
+  /* Code from template association_SetOneToMany */
+  public boolean setManager(Manager aManager)
   {
-    return 0;
-  }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addRequestedItem(ClothingItem aRequestedItem)
-  {
-    boolean wasAdded = false;
-    if (requestedItems.contains(aRequestedItem)) { return false; }
-    requestedItems.add(aRequestedItem);
-    if (aRequestedItem.indexOfOrder(this) != -1)
+    boolean wasSet = false;
+    if (aManager == null)
     {
-      wasAdded = true;
-    }
-    else
-    {
-      wasAdded = aRequestedItem.addOrder(this);
-      if (!wasAdded)
-      {
-        requestedItems.remove(aRequestedItem);
-      }
-    }
-    return wasAdded;
-  }
-  /* Code from template association_RemoveMany */
-  public boolean removeRequestedItem(ClothingItem aRequestedItem)
-  {
-    boolean wasRemoved = false;
-    if (!requestedItems.contains(aRequestedItem))
-    {
-      return wasRemoved;
+      return wasSet;
     }
 
-    int oldIndex = requestedItems.indexOf(aRequestedItem);
-    requestedItems.remove(oldIndex);
-    if (aRequestedItem.indexOfOrder(this) == -1)
+    Manager existingManager = manager;
+    manager = aManager;
+    if (existingManager != null && !existingManager.equals(aManager))
     {
-      wasRemoved = true;
+      existingManager.removeOrdersToAssign(this);
     }
-    else
-    {
-      wasRemoved = aRequestedItem.removeOrder(this);
-      if (!wasRemoved)
-      {
-        requestedItems.add(oldIndex,aRequestedItem);
-      }
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addRequestedItemAt(ClothingItem aRequestedItem, int index)
-  {  
-    boolean wasAdded = false;
-    if(addRequestedItem(aRequestedItem))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfRequestedItems()) { index = numberOfRequestedItems() - 1; }
-      requestedItems.remove(aRequestedItem);
-      requestedItems.add(index, aRequestedItem);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveRequestedItemAt(ClothingItem aRequestedItem, int index)
-  {
-    boolean wasAdded = false;
-    if(requestedItems.contains(aRequestedItem))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfRequestedItems()) { index = numberOfRequestedItems() - 1; }
-      requestedItems.remove(aRequestedItem);
-      requestedItems.add(index, aRequestedItem);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addRequestedItemAt(aRequestedItem, index);
-    }
-    return wasAdded;
+    manager.addOrdersToAssign(this);
+    wasSet = true;
+    return wasSet;
   }
   /* Code from template association_SetOneToMany */
   public boolean setItemGatherer(Employee aItemGatherer)
@@ -255,32 +200,92 @@ public class Order
     itemGatherer = aItemGatherer;
     if (existingItemGatherer != null && !existingItemGatherer.equals(aItemGatherer))
     {
-      existingItemGatherer.removeAssignedOrder(this);
+      existingItemGatherer.removeOrdersToAssemble(this);
     }
-    itemGatherer.addAssignedOrder(this);
+    itemGatherer.addOrdersToAssemble(this);
+    wasSet = true;
+    return wasSet;
+  }
+  /* Code from template association_SetOneToOptionalOne */
+  public boolean setPaidCart(Cart aNewPaidCart)
+  {
+    boolean wasSet = false;
+    if (aNewPaidCart == null)
+    {
+      //Unable to setPaidCart to null, as placedOrder must always be associated to a paidCart
+      return wasSet;
+    }
+    
+    Order existingPlacedOrder = aNewPaidCart.getPlacedOrder();
+    if (existingPlacedOrder != null && !equals(existingPlacedOrder))
+    {
+      //Unable to setPaidCart, the current paidCart already has a placedOrder, which would be orphaned if it were re-assigned
+      return wasSet;
+    }
+    
+    Cart anOldPaidCart = paidCart;
+    paidCart = aNewPaidCart;
+    paidCart.setPlacedOrder(this);
+
+    if (anOldPaidCart != null)
+    {
+      anOldPaidCart.setPlacedOrder(null);
+    }
+    wasSet = true;
+    return wasSet;
+  }
+  /* Code from template association_SetOneToMany */
+  public boolean setDeliveryAddress(Address aDeliveryAddress)
+  {
+    boolean wasSet = false;
+    if (aDeliveryAddress == null)
+    {
+      return wasSet;
+    }
+
+    Address existingDeliveryAddress = deliveryAddress;
+    deliveryAddress = aDeliveryAddress;
+    if (existingDeliveryAddress != null && !existingDeliveryAddress.equals(aDeliveryAddress))
+    {
+      existingDeliveryAddress.removeOrder(this);
+    }
+    deliveryAddress.addOrder(this);
     wasSet = true;
     return wasSet;
   }
 
   public void delete()
   {
+    ordersByOrderNumber.remove(getOrderNumber());
     Customer placeholderCustomer = customer;
     this.customer = null;
     if(placeholderCustomer != null)
     {
-      placeholderCustomer.removeOrder(this);
+      placeholderCustomer.removePaidOrder(this);
     }
-    ArrayList<ClothingItem> copyOfRequestedItems = new ArrayList<ClothingItem>(requestedItems);
-    requestedItems.clear();
-    for(ClothingItem aRequestedItem : copyOfRequestedItems)
+    Manager placeholderManager = manager;
+    this.manager = null;
+    if(placeholderManager != null)
     {
-      aRequestedItem.removeOrder(this);
+      placeholderManager.removeOrdersToAssign(this);
     }
     Employee placeholderItemGatherer = itemGatherer;
     this.itemGatherer = null;
     if(placeholderItemGatherer != null)
     {
-      placeholderItemGatherer.removeAssignedOrder(this);
+      placeholderItemGatherer.removeOrdersToAssemble(this);
+    }
+    Cart existingPaidCart = paidCart;
+    paidCart = null;
+    if (existingPaidCart != null)
+    {
+      existingPaidCart.setPlacedOrder(null);
+    }
+    Address placeholderDeliveryAddress = deliveryAddress;
+    this.deliveryAddress = null;
+    if(placeholderDeliveryAddress != null)
+    {
+      placeholderDeliveryAddress.removeOrder(this);
     }
   }
 
@@ -289,9 +294,11 @@ public class Order
   {
     return super.toString() + "["+
             "orderNumber" + ":" + getOrderNumber()+ "," +
-            "daysUntilDelivery" + ":" + getDaysUntilDelivery()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "dateOrdered" + "=" + (getDateOrdered() != null ? !getDateOrdered().equals(this)  ? getDateOrdered().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "shippingDelay" + ":" + getShippingDelay()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "customer = "+(getCustomer()!=null?Integer.toHexString(System.identityHashCode(getCustomer())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "itemGatherer = "+(getItemGatherer()!=null?Integer.toHexString(System.identityHashCode(getItemGatherer())):"null");
+            "  " + "manager = "+(getManager()!=null?Integer.toHexString(System.identityHashCode(getManager())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "itemGatherer = "+(getItemGatherer()!=null?Integer.toHexString(System.identityHashCode(getItemGatherer())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "paidCart = "+(getPaidCart()!=null?Integer.toHexString(System.identityHashCode(getPaidCart())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "deliveryAddress = "+(getDeliveryAddress()!=null?Integer.toHexString(System.identityHashCode(getDeliveryAddress())):"null");
   }
 }

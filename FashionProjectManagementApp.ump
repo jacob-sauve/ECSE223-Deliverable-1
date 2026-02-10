@@ -2,95 +2,109 @@ class FashionStoreManagementApp {
   
 }
 
-class Employee {
-  isA UserAccount;
-}
-
-class Cart {
-  Double totalPrice;
-}
-
-class Order {
-  // auto-incremented unique Integer
-  autounique orderNumber;
-  Date dateOrdered;
-  Integer daysUntilDelivery;
-  [daysUntilDelivery >= 0 && daysUntilDelivery <= 3]
-}
-
 class User {
   lazy name;
-  lazy Integer phoneNumber;
+  lazy phoneNumber;
 }
 
-class UserAccount {
+class AccountType {
   abstract;
   unique immutable String username;
-  // constrain to a non-empty (+), unique, alphanumeric string
-  // not currently functional
-  // password mandatory
   password;
 }
 
+class Employee {
+  isA AccountType;
+}
+
 class Customer {
-  isA UserAccount;
-  address;
+  isA AccountType;
   Integer loyaltyPoints;
 }
 
 class Manager {
-  isA UserAccount;
-  username="manager";
-  password="manager";
+  isA AccountType;
+  String username="manager";
+  String password="manager";
 }
 
-class Shipment {
-  Date dateOrdered;
-  // always shipped next day
-  lazy Date deliveryDate;
+class Address {
+  addressLineOne;
+  postalCode;
+  city;
+  country;
 }
 
 class ClothingItem {
   unique String name;
   Double price;
-  Size size;
-  Integer pointValue;
-  [pointValue >= 1 && pointValue <= 5]
-  enum Size {S, M, L, XL}
-}
-
-class LimitedStatus {
-  abstract;
-  Date startDate;
-  Date endDate;
+  Integer loyaltyPoints;
+  [loyaltyPoints >= 1 && loyaltyPoints <= 5]
 }
 
 class LimitedItem {
-  isA LimitedStatus;
+  isA ClothingItem;
+  Date startDate;
+  Date endDate;
+  // if is seasonal, kept in system with shifted start/end dates
+  Boolean isSeasonal;
 }
 
-class SeasonalItem {
-  isA LimitedStatus;
-  Season season;
-  enum Season {Winter, Spring, Summer, Fall}
+class InventoryItem {
+  Integer quantity;
+  Size size;
 }
 
-class Inventory {
+//class Inventory {}
+
+class CartItem {
+  Integer quantity;
+  Size size;
+}
+
+class Cart {
   
 }
 
-// all associations grouped together
+class Order {
+  unique Integer orderNumber;
+  Integer shippingDelay;
+  [shippingDelay >= 0 && shippingDelay <= 3]
+}
+
+enum Size {S, M, L, XL}
+
+class Shipment {
+    Boolean shipped;
+}
+
+class ShipmentItem {
+  Size size;
+  Integer quantity;
+}
+  
 association {
-1 User -- 0..3 UserAccount;
-1 FashionStoreManagementApp app <@>- 1 Inventory;
-1 FashionStoreManagementApp app <@>- * User;
-1 FashionStoreManagementApp app <@>- * Shipment;
-1 Customer shopper -- 1 Cart;
-1 Cart -- * ClothingItem items;
-1 Inventory -- * ClothingItem stockedItems;
-* Order orders -- 1 Customer;
-* Order -- * ClothingItem requestedItems;
-* Order assignedOrders -- 1 Employee itemGatherer;
-* Shipment -- * ClothingItem receivedItems;
-0..1 LimitedStatus -- 1 ClothingItem limitedItem;
+  1 Customer -- 1..* Address shippingAddresses;
+// only 1 manager account
+  1 Manager storeManager -<@> 1 FashionStoreManagementApp system;
+// to prevent having to instantiate AccountType (default case)
+  1 User person -- 0..3 AccountType storeRoles;
+// all sizes added/removed at once to inventory
+  1 ClothingItem catalogItem -- 4 InventoryItem stockedSizes;
+  //1 Inventory storeInventory -- * InventoryItem stockedItems;
+  1 Customer -- 1 Cart;
+  1 Customer -- * Order paidOrders;
+  1 Manager -- * Order ordersToAssign;
+  1 Employee itemGatherer -- * Order ordersToAssemble;
+  1 Cart paidCart -- 0..1 Order placedOrder;
+  1 Cart <@>- * CartItem;
+  0..4 CartItem -- 1 ClothingItem;
+  * ClothingItem catalogItems -<@> 1 FashionStoreManagementApp system;
+  * InventoryItem stockedItems -<@> 0..1 FashionStoreManagementApp system;
+  1 Shipment orderedShipment <@>- * ShipmentItem itemsInShipment;
+  1 ClothingItem itemToShip -- 0..4 ShipmentItem specificItem;
+  1 Manager shipmentManager -- * Shipment shipments;
+  * Shipment shipments -- * InventoryItem updatedInventoryItems;
+  1 Manager storeManager -- * Employee managedEmployees;
+  1 Address deliveryAddress -- * Order;
 }
