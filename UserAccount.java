@@ -24,7 +24,6 @@ public abstract class UserAccount
 
   //UserAccount Associations
   private User user;
-  private FashionStoreManagementApp app;
 
   //Helper Variables
   private boolean canSetUsername;
@@ -33,7 +32,7 @@ public abstract class UserAccount
   // CONSTRUCTOR
   //------------------------
 
-  public UserAccount(String aUsername, String aPassword, User aUser, FashionStoreManagementApp aApp)
+  public UserAccount(String aUsername, String aPassword, User aUser)
   {
     canSetUsername = true;
     password = aPassword;
@@ -45,11 +44,6 @@ public abstract class UserAccount
     if (!didAddUser)
     {
       throw new RuntimeException("Unable to create userAccount due to user. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    boolean didAddApp = setApp(aApp);
-    if (!didAddApp)
-    {
-      throw new RuntimeException("Unable to create userAccount due to app. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -115,11 +109,6 @@ public abstract class UserAccount
   {
     return user;
   }
-  /* Code from template association_GetOne */
-  public FashionStoreManagementApp getApp()
-  {
-    return app;
-  }
   /* Code from template association_SetOneToAtMostN */
   public boolean setUser(User aUser)
   {
@@ -151,25 +140,6 @@ public abstract class UserAccount
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setApp(FashionStoreManagementApp aApp)
-  {
-    boolean wasSet = false;
-    if (aApp == null)
-    {
-      return wasSet;
-    }
-
-    FashionStoreManagementApp existingApp = app;
-    app = aApp;
-    if (existingApp != null && !existingApp.equals(aApp))
-    {
-      existingApp.removeUserAccount(this);
-    }
-    app.addUserAccount(this);
-    wasSet = true;
-    return wasSet;
-  }
 
   public void delete()
   {
@@ -180,12 +150,6 @@ public abstract class UserAccount
     {
       placeholderUser.removeUserAccount(this);
     }
-    FashionStoreManagementApp placeholderApp = app;
-    this.app = null;
-    if(placeholderApp != null)
-    {
-      placeholderApp.removeUserAccount(this);
-    }
   }
 
 
@@ -194,7 +158,6 @@ public abstract class UserAccount
     return super.toString() + "["+
             "username" + ":" + getUsername()+ "," +
             "password" + ":" + getPassword()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "user = "+(getUser()!=null?Integer.toHexString(System.identityHashCode(getUser())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "app = "+(getApp()!=null?Integer.toHexString(System.identityHashCode(getApp())):"null");
+            "  " + "user = "+(getUser()!=null?Integer.toHexString(System.identityHashCode(getUser())):"null");
   }
 }

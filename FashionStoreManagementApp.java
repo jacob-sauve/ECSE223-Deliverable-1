@@ -15,7 +15,7 @@ public class FashionStoreManagementApp
 
   //FashionStoreManagementApp Associations
   private Inventory inventory;
-  private List<UserAccount> userAccounts;
+  private List<User> users;
   private List<Shipment> shipments;
 
   //------------------------
@@ -29,14 +29,14 @@ public class FashionStoreManagementApp
       throw new RuntimeException("Unable to create FashionStoreManagementApp due to aInventory. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     inventory = aInventory;
-    userAccounts = new ArrayList<UserAccount>();
+    users = new ArrayList<User>();
     shipments = new ArrayList<Shipment>();
   }
 
   public FashionStoreManagementApp()
   {
     inventory = new Inventory(this);
-    userAccounts = new ArrayList<UserAccount>();
+    users = new ArrayList<User>();
     shipments = new ArrayList<Shipment>();
   }
 
@@ -49,33 +49,33 @@ public class FashionStoreManagementApp
     return inventory;
   }
   /* Code from template association_GetMany */
-  public UserAccount getUserAccount(int index)
+  public User getUser(int index)
   {
-    UserAccount aUserAccount = userAccounts.get(index);
-    return aUserAccount;
+    User aUser = users.get(index);
+    return aUser;
   }
 
-  public List<UserAccount> getUserAccounts()
+  public List<User> getUsers()
   {
-    List<UserAccount> newUserAccounts = Collections.unmodifiableList(userAccounts);
-    return newUserAccounts;
+    List<User> newUsers = Collections.unmodifiableList(users);
+    return newUsers;
   }
 
-  public int numberOfUserAccounts()
+  public int numberOfUsers()
   {
-    int number = userAccounts.size();
+    int number = users.size();
     return number;
   }
 
-  public boolean hasUserAccounts()
+  public boolean hasUsers()
   {
-    boolean has = userAccounts.size() > 0;
+    boolean has = users.size() > 0;
     return has;
   }
 
-  public int indexOfUserAccount(UserAccount aUserAccount)
+  public int indexOfUser(User aUser)
   {
-    int index = userAccounts.indexOf(aUserAccount);
+    int index = users.indexOf(aUser);
     return index;
   }
   /* Code from template association_GetMany */
@@ -109,71 +109,74 @@ public class FashionStoreManagementApp
     return index;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfUserAccounts()
+  public static int minimumNumberOfUsers()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
+  public User addUser()
+  {
+    return new User(this);
+  }
 
-
-  public boolean addUserAccount(UserAccount aUserAccount)
+  public boolean addUser(User aUser)
   {
     boolean wasAdded = false;
-    if (userAccounts.contains(aUserAccount)) { return false; }
-    FashionStoreManagementApp existingApp = aUserAccount.getApp();
+    if (users.contains(aUser)) { return false; }
+    FashionStoreManagementApp existingApp = aUser.getApp();
     boolean isNewApp = existingApp != null && !this.equals(existingApp);
     if (isNewApp)
     {
-      aUserAccount.setApp(this);
+      aUser.setApp(this);
     }
     else
     {
-      userAccounts.add(aUserAccount);
+      users.add(aUser);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeUserAccount(UserAccount aUserAccount)
+  public boolean removeUser(User aUser)
   {
     boolean wasRemoved = false;
-    //Unable to remove aUserAccount, as it must always have a app
-    if (!this.equals(aUserAccount.getApp()))
+    //Unable to remove aUser, as it must always have a app
+    if (!this.equals(aUser.getApp()))
     {
-      userAccounts.remove(aUserAccount);
+      users.remove(aUser);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addUserAccountAt(UserAccount aUserAccount, int index)
+  public boolean addUserAt(User aUser, int index)
   {  
     boolean wasAdded = false;
-    if(addUserAccount(aUserAccount))
+    if(addUser(aUser))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfUserAccounts()) { index = numberOfUserAccounts() - 1; }
-      userAccounts.remove(aUserAccount);
-      userAccounts.add(index, aUserAccount);
+      if(index > numberOfUsers()) { index = numberOfUsers() - 1; }
+      users.remove(aUser);
+      users.add(index, aUser);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveUserAccountAt(UserAccount aUserAccount, int index)
+  public boolean addOrMoveUserAt(User aUser, int index)
   {
     boolean wasAdded = false;
-    if(userAccounts.contains(aUserAccount))
+    if(users.contains(aUser))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfUserAccounts()) { index = numberOfUserAccounts() - 1; }
-      userAccounts.remove(aUserAccount);
-      userAccounts.add(index, aUserAccount);
+      if(index > numberOfUsers()) { index = numberOfUsers() - 1; }
+      users.remove(aUser);
+      users.add(index, aUser);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addUserAccountAt(aUserAccount, index);
+      wasAdded = addUserAt(aUser, index);
     }
     return wasAdded;
   }
@@ -258,11 +261,11 @@ public class FashionStoreManagementApp
     {
       existingInventory.delete();
     }
-    while (userAccounts.size() > 0)
+    while (users.size() > 0)
     {
-      UserAccount aUserAccount = userAccounts.get(userAccounts.size() - 1);
-      aUserAccount.delete();
-      userAccounts.remove(aUserAccount);
+      User aUser = users.get(users.size() - 1);
+      aUser.delete();
+      users.remove(aUser);
     }
     
     while (shipments.size() > 0)

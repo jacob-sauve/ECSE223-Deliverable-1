@@ -20,9 +20,9 @@ public class Manager extends UserAccount
   // CONSTRUCTOR
   //------------------------
 
-  public Manager(String aUsername, String aPassword, User aUser, FashionStoreManagementApp aApp)
+  public Manager(String aUsername, String aPassword, User aUser)
   {
-    super(aUsername, aPassword, aUser, aApp);
+    super(aUsername, aPassword, aUser);
     username = "manager";
     password = "manager";
   }

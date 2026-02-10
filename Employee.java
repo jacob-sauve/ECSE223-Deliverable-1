@@ -20,9 +20,9 @@ public class Employee extends UserAccount
   // CONSTRUCTOR
   //------------------------
 
-  public Employee(String aUsername, String aPassword, User aUser, FashionStoreManagementApp aApp)
+  public Employee(String aUsername, String aPassword, User aUser)
   {
-    super(aUsername, aPassword, aUser, aApp);
+    super(aUsername, aPassword, aUser);
     assignedOrders = new ArrayList<Order>();
   }
 

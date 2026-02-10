@@ -25,9 +25,9 @@ public class Customer extends UserAccount
   // CONSTRUCTOR
   //------------------------
 
-  public Customer(String aUsername, String aPassword, User aUser, FashionStoreManagementApp aApp, String aAddress, int aLoyaltyPoints, Cart aCart)
+  public Customer(String aUsername, String aPassword, User aUser, String aAddress, int aLoyaltyPoints, Cart aCart)
   {
-    super(aUsername, aPassword, aUser, aApp);
+    super(aUsername, aPassword, aUser);
     address = aAddress;
     loyaltyPoints = aLoyaltyPoints;
     if (aCart == null || aCart.getShopper() != null)
@@ -38,9 +38,9 @@ public class Customer extends UserAccount
     orders = new ArrayList<Order>();
   }
 
-  public Customer(String aUsername, String aPassword, User aUser, FashionStoreManagementApp aApp, String aAddress, int aLoyaltyPoints, double aTotalPriceForCart)
+  public Customer(String aUsername, String aPassword, User aUser, String aAddress, int aLoyaltyPoints, double aTotalPriceForCart)
   {
-    super(aUsername, aPassword, aUser, aApp);
+    super(aUsername, aPassword, aUser);
     address = aAddress;
     loyaltyPoints = aLoyaltyPoints;
     cart = new Cart(aTotalPriceForCart, this);

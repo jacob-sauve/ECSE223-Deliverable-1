@@ -18,16 +18,22 @@ public class User
 
   //User Associations
   private List<UserAccount> userAccounts;
+  private FashionStoreManagementApp app;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public User()
+  public User(FashionStoreManagementApp aApp)
   {
     name = null;
     phoneNumber = 0;
     userAccounts = new ArrayList<UserAccount>();
+    boolean didAddApp = setApp(aApp);
+    if (!didAddApp)
+    {
+      throw new RuntimeException("Unable to create user due to app. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
   }
 
   //------------------------
@@ -88,6 +94,11 @@ public class User
   {
     int index = userAccounts.indexOf(aUserAccount);
     return index;
+  }
+  /* Code from template association_GetOne */
+  public FashionStoreManagementApp getApp()
+  {
+    return app;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfUserAccounts()
@@ -168,6 +179,25 @@ public class User
     }
     return wasAdded;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setApp(FashionStoreManagementApp aApp)
+  {
+    boolean wasSet = false;
+    if (aApp == null)
+    {
+      return wasSet;
+    }
+
+    FashionStoreManagementApp existingApp = app;
+    app = aApp;
+    if (existingApp != null && !existingApp.equals(aApp))
+    {
+      existingApp.removeUser(this);
+    }
+    app.addUser(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -176,6 +206,12 @@ public class User
       UserAccount aUserAccount = userAccounts.get(i - 1);
       aUserAccount.delete();
     }
+    FashionStoreManagementApp placeholderApp = app;
+    this.app = null;
+    if(placeholderApp != null)
+    {
+      placeholderApp.removeUser(this);
+    }
   }
 
 
@@ -183,6 +219,7 @@ public class User
   {
     return super.toString() + "["+
             "name" + ":" + getName()+ "," +
-            "phoneNumber" + ":" + getPhoneNumber()+ "]";
+            "phoneNumber" + ":" + getPhoneNumber()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "app = "+(getApp()!=null?Integer.toHexString(System.identityHashCode(getApp())):"null");
   }
 }

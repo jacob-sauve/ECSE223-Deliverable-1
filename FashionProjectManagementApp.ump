@@ -83,7 +83,7 @@ class Inventory {
 association {
 1 User -- 0..3 UserAccount;
 1 FashionStoreManagementApp app <@>- 1 Inventory;
-1 FashionStoreManagementApp app <@>- * UserAccount;
+1 FashionStoreManagementApp app <@>- * User;
 1 FashionStoreManagementApp app <@>- * Shipment;
 1 Customer shopper -- 1 Cart;
 1 Cart -- * ClothingItem items;

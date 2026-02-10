@@ -34,10 +34,10 @@ public class Cart
     items = new ArrayList<ClothingItem>();
   }
 
-  public Cart(double aTotalPrice, String aUsernameForShopper, String aPasswordForShopper, User aUserForShopper, FashionStoreManagementApp aAppForShopper, String aAddressForShopper, int aLoyaltyPointsForShopper)
+  public Cart(double aTotalPrice, String aUsernameForShopper, String aPasswordForShopper, User aUserForShopper, String aAddressForShopper, int aLoyaltyPointsForShopper)
   {
     totalPrice = aTotalPrice;
-    shopper = new Customer(aUsernameForShopper, aPasswordForShopper, aUserForShopper, aAppForShopper, aAddressForShopper, aLoyaltyPointsForShopper, this);
+    shopper = new Customer(aUsernameForShopper, aPasswordForShopper, aUserForShopper, aAddressForShopper, aLoyaltyPointsForShopper, this);
     items = new ArrayList<ClothingItem>();
   }
 
