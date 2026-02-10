@@ -18,6 +18,11 @@ class Order {
   [daysUntilDelivery >= 0 && daysUntilDelivery <= 3]
 }
 
+class User {
+  lazy name;
+  lazy Integer phoneNumber;
+}
+
 class UserAccount {
   abstract;
   unique immutable String username;
@@ -25,8 +30,6 @@ class UserAccount {
   // not currently functional
   // password mandatory
   password;
-  lazy name;
-  lazy Integer phoneNumber;
 }
 
 class Customer {
@@ -36,7 +39,7 @@ class Customer {
 }
 
 class Manager {
-  isA Employee;
+  isA UserAccount;
   username="manager";
   password="manager";
 }
@@ -78,6 +81,7 @@ class Inventory {
 
 // all associations grouped together
 association {
+1 User -- 0..3 UserAccount;
 1 FashionStoreManagementApp app <@>- 1 Inventory;
 1 FashionStoreManagementApp app <@>- * UserAccount;
 1 FashionStoreManagementApp app <@>- * Shipment;

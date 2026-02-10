@@ -4,7 +4,7 @@
 
 import java.sql.Date;
 
-// line 69 "FashionProjectManagementApp.ump"
+// line 72 "FashionProjectManagementApp.ump"
 public class SeasonalItem extends LimitedStatus
 {
 

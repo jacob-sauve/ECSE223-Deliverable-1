@@ -4,7 +4,7 @@
 
 import java.sql.Date;
 
-// line 59 "FashionProjectManagementApp.ump"
+// line 62 "FashionProjectManagementApp.ump"
 public abstract class LimitedStatus
 {
 

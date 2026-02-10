@@ -4,8 +4,8 @@
 
 import java.util.*;
 
-// line 38 "FashionProjectManagementApp.ump"
-public class Manager extends Employee
+// line 41 "FashionProjectManagementApp.ump"
+public class Manager extends UserAccount
 {
 
   //------------------------
@@ -20,9 +20,9 @@ public class Manager extends Employee
   // CONSTRUCTOR
   //------------------------
 
-  public Manager(String aUsername, String aPassword, FashionStoreManagementApp aApp)
+  public Manager(String aUsername, String aPassword, User aUser, FashionStoreManagementApp aApp)
   {
-    super(aUsername, aPassword, aApp);
+    super(aUsername, aPassword, aUser, aApp);
     username = "manager";
     password = "manager";
   }

@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 21 "FashionProjectManagementApp.ump"
+// line 26 "FashionProjectManagementApp.ump"
 public abstract class UserAccount
 {
 
@@ -21,10 +21,9 @@ public abstract class UserAccount
   //UserAccount Attributes
   private String username;
   private String password;
-  private String name;
-  private int phoneNumber;
 
   //UserAccount Associations
+  private User user;
   private FashionStoreManagementApp app;
 
   //Helper Variables
@@ -34,15 +33,18 @@ public abstract class UserAccount
   // CONSTRUCTOR
   //------------------------
 
-  public UserAccount(String aUsername, String aPassword, FashionStoreManagementApp aApp)
+  public UserAccount(String aUsername, String aPassword, User aUser, FashionStoreManagementApp aApp)
   {
     canSetUsername = true;
     password = aPassword;
-    name = null;
-    phoneNumber = 0;
     if (!setUsername(aUsername))
     {
       throw new RuntimeException("Cannot create due to duplicate username. See http://manual.umple.org?RE003ViolationofUniqueness.html");
+    }
+    boolean didAddUser = setUser(aUser);
+    if (!didAddUser)
+    {
+      throw new RuntimeException("Unable to create userAccount due to user. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     boolean didAddApp = setApp(aApp);
     if (!didAddApp)
@@ -84,22 +86,6 @@ public abstract class UserAccount
     return wasSet;
   }
 
-  public boolean setName(String aName)
-  {
-    boolean wasSet = false;
-    name = aName;
-    wasSet = true;
-    return wasSet;
-  }
-
-  public boolean setPhoneNumber(int aPhoneNumber)
-  {
-    boolean wasSet = false;
-    phoneNumber = aPhoneNumber;
-    wasSet = true;
-    return wasSet;
-  }
-
   public String getUsername()
   {
     return username;
@@ -124,20 +110,46 @@ public abstract class UserAccount
   {
     return password;
   }
-
-  public String getName()
+  /* Code from template association_GetOne */
+  public User getUser()
   {
-    return name;
-  }
-
-  public int getPhoneNumber()
-  {
-    return phoneNumber;
+    return user;
   }
   /* Code from template association_GetOne */
   public FashionStoreManagementApp getApp()
   {
     return app;
+  }
+  /* Code from template association_SetOneToAtMostN */
+  public boolean setUser(User aUser)
+  {
+    boolean wasSet = false;
+    //Must provide user to userAccount
+    if (aUser == null)
+    {
+      return wasSet;
+    }
+
+    //user already at maximum (3)
+    if (aUser.numberOfUserAccounts() >= User.maximumNumberOfUserAccounts())
+    {
+      return wasSet;
+    }
+    
+    User existingUser = user;
+    user = aUser;
+    if (existingUser != null && !existingUser.equals(aUser))
+    {
+      boolean didRemove = existingUser.removeUserAccount(this);
+      if (!didRemove)
+      {
+        user = existingUser;
+        return wasSet;
+      }
+    }
+    user.addUserAccount(this);
+    wasSet = true;
+    return wasSet;
   }
   /* Code from template association_SetOneToMany */
   public boolean setApp(FashionStoreManagementApp aApp)
@@ -162,6 +174,12 @@ public abstract class UserAccount
   public void delete()
   {
     useraccountsByUsername.remove(getUsername());
+    User placeholderUser = user;
+    this.user = null;
+    if(placeholderUser != null)
+    {
+      placeholderUser.removeUserAccount(this);
+    }
     FashionStoreManagementApp placeholderApp = app;
     this.app = null;
     if(placeholderApp != null)
@@ -175,9 +193,8 @@ public abstract class UserAccount
   {
     return super.toString() + "["+
             "username" + ":" + getUsername()+ "," +
-            "password" + ":" + getPassword()+ "," +
-            "name" + ":" + getName()+ "," +
-            "phoneNumber" + ":" + getPhoneNumber()+ "]" + System.getProperties().getProperty("line.separator") +
+            "password" + ":" + getPassword()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "user = "+(getUser()!=null?Integer.toHexString(System.identityHashCode(getUser())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "app = "+(getApp()!=null?Integer.toHexString(System.identityHashCode(getApp())):"null");
   }
 }
