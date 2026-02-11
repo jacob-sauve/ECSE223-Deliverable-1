@@ -20,9 +20,9 @@ public class Employee extends AccountType
   // CONSTRUCTOR
   //------------------------
 
-  public Employee(String aUsername, String aPassword, User aPerson, FashionStoreManagementApp aSystem, Manager aStoreManager)
+  public Employee(String aUsername, String aPassword, User aPerson, Manager aStoreManager)
   {
-    super(aUsername, aPassword, aPerson, aSystem);
+    super(aUsername, aPassword, aPerson);
     ordersToAssemble = new ArrayList<Order>();
     boolean didAddStoreManager = setStoreManager(aStoreManager);
     if (!didAddStoreManager)
@@ -75,9 +75,9 @@ public class Employee extends AccountType
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addOrdersToAssemble(int aOrderNumber, int aShippingDelay, Customer aCustomer, Manager aManager, Cart aPaidCart, Address aDeliveryAddress, FashionStoreManagementApp aSystem)
+  public Order addOrdersToAssemble(int aOrderNumber, int aShippingDelay, Customer aCustomer, Manager aManager, Cart aPaidCart, Address aDeliveryAddress)
   {
-    return new Order(aOrderNumber, aShippingDelay, aCustomer, aManager, this, aPaidCart, aDeliveryAddress, aSystem);
+    return new Order(aOrderNumber, aShippingDelay, aCustomer, aManager, this, aPaidCart, aDeliveryAddress);
   }
 
   public boolean addOrdersToAssemble(Order aOrdersToAssemble)

@@ -24,7 +24,6 @@ public abstract class AccountType
 
   //AccountType Associations
   private User person;
-  private FashionStoreManagementApp system;
 
   //Helper Variables
   private boolean canSetUsername;
@@ -33,7 +32,7 @@ public abstract class AccountType
   // CONSTRUCTOR
   //------------------------
 
-  public AccountType(String aUsername, String aPassword, User aPerson, FashionStoreManagementApp aSystem)
+  public AccountType(String aUsername, String aPassword, User aPerson)
   {
     canSetUsername = true;
     password = aPassword;
@@ -45,11 +44,6 @@ public abstract class AccountType
     if (!didAddPerson)
     {
       throw new RuntimeException("Unable to create storeRole due to person. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    boolean didAddSystem = setSystem(aSystem);
-    if (!didAddSystem)
-    {
-      throw new RuntimeException("Unable to create account due to system. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -110,11 +104,6 @@ public abstract class AccountType
   {
     return person;
   }
-  /* Code from template association_GetOne */
-  public FashionStoreManagementApp getSystem()
-  {
-    return system;
-  }
   /* Code from template association_SetOneToAtMostN */
   public boolean setPerson(User aPerson)
   {
@@ -146,25 +135,6 @@ public abstract class AccountType
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setSystem(FashionStoreManagementApp aSystem)
-  {
-    boolean wasSet = false;
-    if (aSystem == null)
-    {
-      return wasSet;
-    }
-
-    FashionStoreManagementApp existingSystem = system;
-    system = aSystem;
-    if (existingSystem != null && !existingSystem.equals(aSystem))
-    {
-      existingSystem.removeAccount(this);
-    }
-    system.addAccount(this);
-    wasSet = true;
-    return wasSet;
-  }
 
   public void delete()
   {
@@ -175,12 +145,6 @@ public abstract class AccountType
     {
       placeholderPerson.removeStoreRole(this);
     }
-    FashionStoreManagementApp placeholderSystem = system;
-    this.system = null;
-    if(placeholderSystem != null)
-    {
-      placeholderSystem.removeAccount(this);
-    }
   }
 
 
@@ -189,7 +153,6 @@ public abstract class AccountType
     return super.toString() + "["+
             "username" + ":" + getUsername()+ "," +
             "password" + ":" + getPassword()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "person = "+(getPerson()!=null?Integer.toHexString(System.identityHashCode(getPerson())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "system = "+(getSystem()!=null?Integer.toHexString(System.identityHashCode(getSystem())):"null");
+            "  " + "person = "+(getPerson()!=null?Integer.toHexString(System.identityHashCode(getPerson())):"null");
   }
 }

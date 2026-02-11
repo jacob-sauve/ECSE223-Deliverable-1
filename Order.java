@@ -28,13 +28,12 @@ public class Order
   private Employee itemGatherer;
   private Cart paidCart;
   private Address deliveryAddress;
-  private FashionStoreManagementApp system;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Order(int aOrderNumber, int aShippingDelay, Customer aCustomer, Manager aManager, Employee aItemGatherer, Cart aPaidCart, Address aDeliveryAddress, FashionStoreManagementApp aSystem)
+  public Order(int aOrderNumber, int aShippingDelay, Customer aCustomer, Manager aManager, Employee aItemGatherer, Cart aPaidCart, Address aDeliveryAddress)
   {
     shippingDelay = aShippingDelay;
     if (!setOrderNumber(aOrderNumber))
@@ -65,11 +64,6 @@ public class Order
     if (!didAddDeliveryAddress)
     {
       throw new RuntimeException("Unable to create order due to deliveryAddress. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    boolean didAddSystem = setSystem(aSystem);
-    if (!didAddSystem)
-    {
-      throw new RuntimeException("Unable to create order due to system. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
     if (aShippingDelay<0||aShippingDelay>3)
     {
@@ -154,11 +148,6 @@ public class Order
   public Address getDeliveryAddress()
   {
     return deliveryAddress;
-  }
-  /* Code from template association_GetOne */
-  public FashionStoreManagementApp getSystem()
-  {
-    return system;
   }
   /* Code from template association_SetOneToMany */
   public boolean setCustomer(Customer aCustomer)
@@ -264,25 +253,6 @@ public class Order
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setSystem(FashionStoreManagementApp aSystem)
-  {
-    boolean wasSet = false;
-    if (aSystem == null)
-    {
-      return wasSet;
-    }
-
-    FashionStoreManagementApp existingSystem = system;
-    system = aSystem;
-    if (existingSystem != null && !existingSystem.equals(aSystem))
-    {
-      existingSystem.removeOrder(this);
-    }
-    system.addOrder(this);
-    wasSet = true;
-    return wasSet;
-  }
 
   public void delete()
   {
@@ -317,12 +287,6 @@ public class Order
     {
       placeholderDeliveryAddress.removeOrder(this);
     }
-    FashionStoreManagementApp placeholderSystem = system;
-    this.system = null;
-    if(placeholderSystem != null)
-    {
-      placeholderSystem.removeOrder(this);
-    }
   }
 
 
@@ -335,7 +299,6 @@ public class Order
             "  " + "manager = "+(getManager()!=null?Integer.toHexString(System.identityHashCode(getManager())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "itemGatherer = "+(getItemGatherer()!=null?Integer.toHexString(System.identityHashCode(getItemGatherer())):"null") + System.getProperties().getProperty("line.separator") +
             "  " + "paidCart = "+(getPaidCart()!=null?Integer.toHexString(System.identityHashCode(getPaidCart())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "deliveryAddress = "+(getDeliveryAddress()!=null?Integer.toHexString(System.identityHashCode(getDeliveryAddress())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "system = "+(getSystem()!=null?Integer.toHexString(System.identityHashCode(getSystem())):"null");
+            "  " + "deliveryAddress = "+(getDeliveryAddress()!=null?Integer.toHexString(System.identityHashCode(getDeliveryAddress())):"null");
   }
 }

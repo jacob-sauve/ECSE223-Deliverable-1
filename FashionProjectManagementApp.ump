@@ -72,6 +72,7 @@ class Order {
 
 class Shipment {
     Boolean shipped;
+    Date shippingDate;
 }
 
 class ShipmentItem {
@@ -82,7 +83,7 @@ class ShipmentItem {
 enum Size {S, M, L, XL}
 
 association {
-  1..* Customer -- 1..* Address shippingAddresses;
+  1 Customer -- 1..* Address shippingAddresses;
 // only 1 manager account per system
   1 Manager storeManager -<@> 1 FashionStoreManagementApp system;
 // to prevent having to instantiate AccountType (default case)
@@ -107,9 +108,5 @@ association {
   1 Manager storeManager -- * Employee managedEmployees;
   1 Address deliveryAddress -- * Order;
 // Users and the app have tied lifecycles
-  1 FashionStoreManagementApp system <@>- * User users;
-  1 FashionStoreManagementApp system <@>- * Order orders;
-  1 FashionStoreManagementApp system <@>- * AccountType accounts;
-  1 FashionStoreManagementApp system <@>- * Shipment loggedShipments;
-  1 FashionStoreManagementApp system <@>- * Address savedAddress;
+  1 FashionStoreManagementApp system -- * User users;
 }

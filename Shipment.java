@@ -2,6 +2,7 @@
 /*This code was generated using the UMPLE 1.33.0.6934.a386b0a58 modeling language!*/
 
 
+import java.sql.Date;
 import java.util.*;
 
 // line 73 "FashionProjectManagementApp.ump"
@@ -20,29 +21,25 @@ public class Shipment
 
   //Shipment Attributes
   private boolean shipped;
+  private Date shippingDate;
 
   //Shipment Associations
   private List<ShipmentItem> shippedItems;
   private Manager shipmentManager;
-  private FashionStoreManagementApp system;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Shipment(boolean aShipped, Manager aShipmentManager, FashionStoreManagementApp aSystem)
+  public Shipment(boolean aShipped, Date aShippingDate, Manager aShipmentManager)
   {
     shipped = aShipped;
+    shippingDate = aShippingDate;
     shippedItems = new ArrayList<ShipmentItem>();
     boolean didAddShipmentManager = setShipmentManager(aShipmentManager);
     if (!didAddShipmentManager)
     {
       throw new RuntimeException("Unable to create shipment due to shipmentManager. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
-    }
-    boolean didAddSystem = setSystem(aSystem);
-    if (!didAddSystem)
-    {
-      throw new RuntimeException("Unable to create loggedShipment due to system. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -58,9 +55,22 @@ public class Shipment
     return wasSet;
   }
 
+  public boolean setShippingDate(Date aShippingDate)
+  {
+    boolean wasSet = false;
+    shippingDate = aShippingDate;
+    wasSet = true;
+    return wasSet;
+  }
+
   public boolean getShipped()
   {
     return shipped;
+  }
+
+  public Date getShippingDate()
+  {
+    return shippingDate;
   }
   /* Code from template attribute_IsBoolean */
   public boolean isShipped()
@@ -101,11 +111,6 @@ public class Shipment
   public Manager getShipmentManager()
   {
     return shipmentManager;
-  }
-  /* Code from template association_GetOne */
-  public FashionStoreManagementApp getSystem()
-  {
-    return system;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfShippedItems()
@@ -198,25 +203,6 @@ public class Shipment
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_SetOneToMany */
-  public boolean setSystem(FashionStoreManagementApp aSystem)
-  {
-    boolean wasSet = false;
-    if (aSystem == null)
-    {
-      return wasSet;
-    }
-
-    FashionStoreManagementApp existingSystem = system;
-    system = aSystem;
-    if (existingSystem != null && !existingSystem.equals(aSystem))
-    {
-      existingSystem.removeLoggedShipment(this);
-    }
-    system.addLoggedShipment(this);
-    wasSet = true;
-    return wasSet;
-  }
 
   public void delete()
   {
@@ -233,12 +219,6 @@ public class Shipment
     {
       placeholderShipmentManager.removeShipment(this);
     }
-    FashionStoreManagementApp placeholderSystem = system;
-    this.system = null;
-    if(placeholderSystem != null)
-    {
-      placeholderSystem.removeLoggedShipment(this);
-    }
   }
 
 
@@ -246,7 +226,7 @@ public class Shipment
   {
     return super.toString() + "["+
             "shipped" + ":" + getShipped()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "shipmentManager = "+(getShipmentManager()!=null?Integer.toHexString(System.identityHashCode(getShipmentManager())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "system = "+(getSystem()!=null?Integer.toHexString(System.identityHashCode(getSystem())):"null");
+            "  " + "shippingDate" + "=" + (getShippingDate() != null ? !getShippingDate().equals(this)  ? getShippingDate().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
+            "  " + "shipmentManager = "+(getShipmentManager()!=null?Integer.toHexString(System.identityHashCode(getShipmentManager())):"null");
   }
 }

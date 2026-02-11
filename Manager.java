@@ -3,6 +3,7 @@
 
 
 import java.util.*;
+import java.sql.Date;
 
 // line 25 "FashionProjectManagementApp.ump"
 public class Manager extends AccountType
@@ -26,9 +27,9 @@ public class Manager extends AccountType
   // CONSTRUCTOR
   //------------------------
 
-  public Manager(String aUsername, String aPassword, User aPerson, FashionStoreManagementApp aSystem, FashionStoreManagementApp aSystem)
+  public Manager(String aUsername, String aPassword, User aPerson, FashionStoreManagementApp aSystem)
   {
-    super(aUsername, aPassword, aPerson, aSystem);
+    super(aUsername, aPassword, aPerson);
     username = "manager";
     password = "manager";
     if (aSystem == null || aSystem.getStoreManager() != null)
@@ -43,7 +44,7 @@ public class Manager extends AccountType
 
   public Manager(String aUsername, String aPassword, User aPerson)
   {
-    super(aUsername, aPassword, aPerson, aSystem);
+    super(aUsername, aPassword, aPerson);
     username = "manager";
     password = "manager";
     system = new FashionStoreManagementApp(this);
@@ -182,9 +183,9 @@ public class Manager extends AccountType
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addOrdersToAssign(int aOrderNumber, int aShippingDelay, Customer aCustomer, Employee aItemGatherer, Cart aPaidCart, Address aDeliveryAddress, FashionStoreManagementApp aSystem)
+  public Order addOrdersToAssign(int aOrderNumber, int aShippingDelay, Customer aCustomer, Employee aItemGatherer, Cart aPaidCart, Address aDeliveryAddress)
   {
-    return new Order(aOrderNumber, aShippingDelay, aCustomer, this, aItemGatherer, aPaidCart, aDeliveryAddress, aSystem);
+    return new Order(aOrderNumber, aShippingDelay, aCustomer, this, aItemGatherer, aPaidCart, aDeliveryAddress);
   }
 
   public boolean addOrdersToAssign(Order aOrdersToAssign)
@@ -254,9 +255,9 @@ public class Manager extends AccountType
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Shipment addShipment(boolean aShipped, FashionStoreManagementApp aSystem)
+  public Shipment addShipment(boolean aShipped, Date aShippingDate)
   {
-    return new Shipment(aShipped, this, aSystem);
+    return new Shipment(aShipped, aShippingDate, this);
   }
 
   public boolean addShipment(Shipment aShipment)
@@ -326,9 +327,9 @@ public class Manager extends AccountType
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Employee addManagedEmployee(String aUsername, String aPassword, User aPerson, FashionStoreManagementApp aSystem)
+  public Employee addManagedEmployee(String aUsername, String aPassword, User aPerson)
   {
-    return new Employee(aUsername, aPassword, aPerson, aSystem, this);
+    return new Employee(aUsername, aPassword, aPerson, this);
   }
 
   public boolean addManagedEmployee(Employee aManagedEmployee)
