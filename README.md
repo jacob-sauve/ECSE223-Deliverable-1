@@ -2,7 +2,8 @@
 *Umple and generated Java code for Fashion Store Management website.*
 
 <img width="1600" height="1238" alt="imagen" src="https://github.com/user-attachments/assets/8c6222ed-af21-4385-a2f8-45149cf4921f" />
-Above is our group’s class diagram. Below are a few paragraphs justifying our model, namely by detailing the intended behaviour of our system to demonstrate that our class diagram holds up to scenario analysis.
+<br>
+Above is our group’s class diagram, made with the help of [RyanLiuQc](https://github.com/RyanLiuQc) and [MarnyCode](https://github.com/MarnyCode). Below are a few paragraphs justifying our model, namely by detailing the intended behaviour of our system to demonstrate that our class diagram holds up to scenario analysis.
 
 
 ## Shipments and Inventory:
