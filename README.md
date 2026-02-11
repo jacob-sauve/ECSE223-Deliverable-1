@@ -1,2 +1,18 @@
 # ECSE223-Deliverable-1
-Umple and generated Java code for Fashion Store Management website.
+*Umple and generated Java code for Fashion Store Management website.*
+
+<img width="1600" height="1238" alt="imagen" src="https://github.com/user-attachments/assets/8c6222ed-af21-4385-a2f8-45149cf4921f" />
+Above is our group’s class diagram. Below are a few paragraphs justifying our model, namely by detailing the intended behaviour of our system to demonstrate that our class diagram holds up to scenario analysis.
+
+
+## Shipments and Inventory:
+The inventory system was implemented here using the intermediate class InventoryItem, which links its overarching composition class ClothingItem to the overarching FashionStoreManagementApp class, and contains the specific details regarding which items are present in inventory and in which sizes. InventoryItem is linked to the overarching FashionStoreManagementApp directly in a stockedItem role if and only if its current quantity is non-zero (updated upon creation of a ClothingItem and/or reception of a Shipment). ClothingItem is additionally linked to the App by its own composition relationship, in order to store an exhaustive catalog of all offered items, namely for the manager’s convenience when ordering from the supplier, but also to facilitate the management of limited and seasonal items. A group of a certain amount of specific items of a certain size is shipped using a ShipmentItem object, all of which are contained within and compose a Shipment object. When it is delivered to the store, a Shipment’s received boolean flag flips to True and each ShipmentItem polls its associated ClothingItem to update the relevant InventoryItem to account for the additional stock, potentially causing it to enter a relationship with the App class if its stock surpasses 0 as a result.
+## Limited and Seasonal Items:
+Limited and Seasonal items are grouped in this implementation under one class called LimitedItem which is a subclass of ClothingItem. Instances of the subclass gain startDate and endDate attributes indicating the date range in the upcoming year during which the item will be available for purchase. Additionally, if the isSeasonal flag is True, when the system would hide/delete the item post-endDate, it instead shifts both its startDate and endDate by 365 days, i.e. sets up its availability for next season.
+## Carts and Orders:
+At any given moment, a Customer has exactly one Cart, but a Cart can be associated with 0 Customers in the case where it has been paid. Indeed, Carts are composed of CartItems, of which there are 0 to 4 per ClothingItem corresponding to the 4 possible sizes (at most) of a given item that can be ordered, each of which contains the size in question and the desired quantity. When a user pays the totalPrice for their Cart, after quantities are cross-referenced with existing InventoryItems to ensure that the order is feasible, an Order object is created associated to the Cart, and a new Cart is created and associated to the Customer, whose reference to the previous Cart is thus deleted due to the 1 Cart–-0..1 Customer multiplicity. The Cart is kept by the Order, though, which can thus access the ordered items stored in the CartItem objects for reference to deduct from the InventoryItems’ respective quantities and for Employee reference when assembling the order.
+## Addresses:
+Addresses were deemed worthy of their own class to store their different components and have multiple Addresses per Customer. Orders are thus also linked to their designated delivery Address when a Cart is paid for and they are created.
+Constraints on Delivery Date and Loyalty Point Values:
+Numeric constraints on the amount of days until Order delivery for Customers and with regards to point values for ClothingItems were implemented using the numeric constraint syntax in Umple, i.e.:
+``[attributeName >= minValue && attributeName <= maxValue]``
