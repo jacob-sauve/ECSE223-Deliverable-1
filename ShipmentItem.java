@@ -3,7 +3,7 @@
 
 
 
-// line 81 "FashionProjectManagementApp.ump"
+// line 77 "FashionProjectManagementApp.ump"
 public class ShipmentItem
 {
 
@@ -23,25 +23,25 @@ public class ShipmentItem
 
   //ShipmentItem Associations
   private Shipment orderedShipment;
-  private ClothingItem itemToShip;
+  private ClothingItem itemTypeToShip;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ShipmentItem(Size aSize, int aQuantity, Shipment aOrderedShipment, ClothingItem aItemToShip)
+  public ShipmentItem(Size aSize, int aQuantity, Shipment aOrderedShipment, ClothingItem aItemTypeToShip)
   {
     size = aSize;
     quantity = aQuantity;
     boolean didAddOrderedShipment = setOrderedShipment(aOrderedShipment);
     if (!didAddOrderedShipment)
     {
-      throw new RuntimeException("Unable to create itemsInShipment due to orderedShipment. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create shippedItem due to orderedShipment. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    boolean didAddItemToShip = setItemToShip(aItemToShip);
-    if (!didAddItemToShip)
+    boolean didAddItemTypeToShip = setItemTypeToShip(aItemTypeToShip);
+    if (!didAddItemTypeToShip)
     {
-      throw new RuntimeException("Unable to create specificItem due to itemToShip. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create specificReceivedItem due to itemTypeToShip. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -80,9 +80,9 @@ public class ShipmentItem
     return orderedShipment;
   }
   /* Code from template association_GetOne */
-  public ClothingItem getItemToShip()
+  public ClothingItem getItemTypeToShip()
   {
-    return itemToShip;
+    return itemTypeToShip;
   }
   /* Code from template association_SetOneToMany */
   public boolean setOrderedShipment(Shipment aOrderedShipment)
@@ -97,40 +97,40 @@ public class ShipmentItem
     orderedShipment = aOrderedShipment;
     if (existingOrderedShipment != null && !existingOrderedShipment.equals(aOrderedShipment))
     {
-      existingOrderedShipment.removeItemsInShipment(this);
+      existingOrderedShipment.removeShippedItem(this);
     }
-    orderedShipment.addItemsInShipment(this);
+    orderedShipment.addShippedItem(this);
     wasSet = true;
     return wasSet;
   }
   /* Code from template association_SetOneToAtMostN */
-  public boolean setItemToShip(ClothingItem aItemToShip)
+  public boolean setItemTypeToShip(ClothingItem aItemTypeToShip)
   {
     boolean wasSet = false;
-    //Must provide itemToShip to specificItem
-    if (aItemToShip == null)
+    //Must provide itemTypeToShip to specificReceivedItem
+    if (aItemTypeToShip == null)
     {
       return wasSet;
     }
 
-    //itemToShip already at maximum (4)
-    if (aItemToShip.numberOfSpecificItem() >= ClothingItem.maximumNumberOfSpecificItem())
+    //itemTypeToShip already at maximum (4)
+    if (aItemTypeToShip.numberOfSpecificReceivedItems() >= ClothingItem.maximumNumberOfSpecificReceivedItems())
     {
       return wasSet;
     }
     
-    ClothingItem existingItemToShip = itemToShip;
-    itemToShip = aItemToShip;
-    if (existingItemToShip != null && !existingItemToShip.equals(aItemToShip))
+    ClothingItem existingItemTypeToShip = itemTypeToShip;
+    itemTypeToShip = aItemTypeToShip;
+    if (existingItemTypeToShip != null && !existingItemTypeToShip.equals(aItemTypeToShip))
     {
-      boolean didRemove = existingItemToShip.removeSpecificItem(this);
+      boolean didRemove = existingItemTypeToShip.removeSpecificReceivedItem(this);
       if (!didRemove)
       {
-        itemToShip = existingItemToShip;
+        itemTypeToShip = existingItemTypeToShip;
         return wasSet;
       }
     }
-    itemToShip.addSpecificItem(this);
+    itemTypeToShip.addSpecificReceivedItem(this);
     wasSet = true;
     return wasSet;
   }
@@ -141,13 +141,13 @@ public class ShipmentItem
     this.orderedShipment = null;
     if(placeholderOrderedShipment != null)
     {
-      placeholderOrderedShipment.removeItemsInShipment(this);
+      placeholderOrderedShipment.removeShippedItem(this);
     }
-    ClothingItem placeholderItemToShip = itemToShip;
-    this.itemToShip = null;
-    if(placeholderItemToShip != null)
+    ClothingItem placeholderItemTypeToShip = itemTypeToShip;
+    this.itemTypeToShip = null;
+    if(placeholderItemTypeToShip != null)
     {
-      placeholderItemToShip.removeSpecificItem(this);
+      placeholderItemTypeToShip.removeSpecificReceivedItem(this);
     }
   }
 
@@ -158,6 +158,6 @@ public class ShipmentItem
             "quantity" + ":" + getQuantity()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "orderedShipment = "+(getOrderedShipment()!=null?Integer.toHexString(System.identityHashCode(getOrderedShipment())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "itemToShip = "+(getItemToShip()!=null?Integer.toHexString(System.identityHashCode(getItemToShip())):"null");
+            "  " + "itemTypeToShip = "+(getItemTypeToShip()!=null?Integer.toHexString(System.identityHashCode(getItemTypeToShip())):"null");
   }
 }

@@ -55,8 +55,6 @@ class InventoryItem {
   Size size;
 }
 
-//class Inventory {}
-
 class CartItem {
   Integer quantity;
   Size size;
@@ -72,8 +70,6 @@ class Order {
   [shippingDelay >= 0 && shippingDelay <= 3]
 }
 
-enum Size {S, M, L, XL}
-
 class Shipment {
     Boolean shipped;
 }
@@ -82,10 +78,12 @@ class ShipmentItem {
   Size size;
   Integer quantity;
 }
-  
+
+enum Size {S, M, L, XL}
+
 association {
   1 Customer -- 1..* Address shippingAddresses;
-// only 1 manager account
+// only 1 manager account per system
   1 Manager storeManager -<@> 1 FashionStoreManagementApp system;
 // to prevent having to instantiate AccountType (default case)
   1 User person -- 0..3 AccountType storeRoles;
@@ -99,12 +97,14 @@ association {
   1 Cart paidCart -- 0..1 Order placedOrder;
   1 Cart <@>- * CartItem;
   0..4 CartItem -- 1 ClothingItem;
-  * ClothingItem catalogItems -<@> 1 FashionStoreManagementApp system;
-  * InventoryItem stockedItems -<@> 0..1 FashionStoreManagementApp system;
-  1 Shipment orderedShipment <@>- * ShipmentItem itemsInShipment;
-  1 ClothingItem itemToShip -- 0..4 ShipmentItem specificItem;
+// all items offered by the store, including those out of stock
+  * ClothingItem catalogItems -<@> 1 FashionStoreManagementApp catalog;
+// all sizes in stock and their quantities
+  * InventoryItem stockedItems -<@> 0..1 FashionStoreManagementApp inventory;
+  1 Shipment orderedShipment <@>- * ShipmentItem shippedItems;
+  1 ClothingItem itemTypeToShip -- 0..4 ShipmentItem specificReceivedItems;
   1 Manager shipmentManager -- * Shipment shipments;
-  * Shipment shipments -- * InventoryItem updatedInventoryItems;
+  //* Shipment shipments -- * InventoryItem updatedInventoryItems;
   1 Manager storeManager -- * Employee managedEmployees;
   1 Address deliveryAddress -- * Order;
 }

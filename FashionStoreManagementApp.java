@@ -128,11 +128,11 @@ public class FashionStoreManagementApp
   {
     boolean wasAdded = false;
     if (catalogItems.contains(aCatalogItem)) { return false; }
-    FashionStoreManagementApp existingSystem = aCatalogItem.getSystem();
-    boolean isNewSystem = existingSystem != null && !this.equals(existingSystem);
-    if (isNewSystem)
+    FashionStoreManagementApp existingCatalog = aCatalogItem.getCatalog();
+    boolean isNewCatalog = existingCatalog != null && !this.equals(existingCatalog);
+    if (isNewCatalog)
     {
-      aCatalogItem.setSystem(this);
+      aCatalogItem.setCatalog(this);
     }
     else
     {
@@ -145,8 +145,8 @@ public class FashionStoreManagementApp
   public boolean removeCatalogItem(ClothingItem aCatalogItem)
   {
     boolean wasRemoved = false;
-    //Unable to remove aCatalogItem, as it must always have a system
-    if (!this.equals(aCatalogItem.getSystem()))
+    //Unable to remove aCatalogItem, as it must always have a catalog
+    if (!this.equals(aCatalogItem.getCatalog()))
     {
       catalogItems.remove(aCatalogItem);
       wasRemoved = true;
@@ -195,14 +195,14 @@ public class FashionStoreManagementApp
   {
     boolean wasAdded = false;
     if (stockedItems.contains(aStockedItem)) { return false; }
-    FashionStoreManagementApp existingSystem = aStockedItem.getSystem();
-    if (existingSystem == null)
+    FashionStoreManagementApp existingInventory = aStockedItem.getInventory();
+    if (existingInventory == null)
     {
-      aStockedItem.setSystem(this);
+      aStockedItem.setInventory(this);
     }
-    else if (!this.equals(existingSystem))
+    else if (!this.equals(existingInventory))
     {
-      existingSystem.removeStockedItem(aStockedItem);
+      existingInventory.removeStockedItem(aStockedItem);
       addStockedItem(aStockedItem);
     }
     else
@@ -219,7 +219,7 @@ public class FashionStoreManagementApp
     if (stockedItems.contains(aStockedItem))
     {
       stockedItems.remove(aStockedItem);
-      aStockedItem.setSystem(null);
+      aStockedItem.setInventory(null);
       wasRemoved = true;
     }
     return wasRemoved;

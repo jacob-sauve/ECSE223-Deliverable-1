@@ -22,9 +22,9 @@ public class LimitedItem extends ClothingItem
   // CONSTRUCTOR
   //------------------------
 
-  public LimitedItem(String aName, double aPrice, int aLoyaltyPoints, FashionStoreManagementApp aSystem, Date aStartDate, Date aEndDate, boolean aIsSeasonal)
+  public LimitedItem(String aName, double aPrice, int aLoyaltyPoints, FashionStoreManagementApp aCatalog, Date aStartDate, Date aEndDate, boolean aIsSeasonal)
   {
-    super(aName, aPrice, aLoyaltyPoints, aSystem);
+    super(aName, aPrice, aLoyaltyPoints, aCatalog);
     startDate = aStartDate;
     endDate = aEndDate;
     isSeasonal = aIsSeasonal;

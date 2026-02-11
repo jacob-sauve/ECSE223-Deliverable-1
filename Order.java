@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 69 "FashionProjectManagementApp.ump"
+// line 67 "FashionProjectManagementApp.ump"
 public class Order
 {
 

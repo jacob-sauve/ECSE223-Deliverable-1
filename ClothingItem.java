@@ -32,14 +32,14 @@ public class ClothingItem
   //ClothingItem Associations
   private List<InventoryItem> stockedSizes;
   private List<CartItem> cartItems;
-  private FashionStoreManagementApp system;
-  private List<ShipmentItem> specificItem;
+  private FashionStoreManagementApp catalog;
+  private List<ShipmentItem> specificReceivedItems;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public ClothingItem(String aName, double aPrice, int aLoyaltyPoints, FashionStoreManagementApp aSystem)
+  public ClothingItem(String aName, double aPrice, int aLoyaltyPoints, FashionStoreManagementApp aCatalog)
   {
     price = aPrice;
     loyaltyPoints = aLoyaltyPoints;
@@ -49,12 +49,12 @@ public class ClothingItem
     }
     stockedSizes = new ArrayList<InventoryItem>();
     cartItems = new ArrayList<CartItem>();
-    boolean didAddSystem = setSystem(aSystem);
-    if (!didAddSystem)
+    boolean didAddCatalog = setCatalog(aCatalog);
+    if (!didAddCatalog)
     {
-      throw new RuntimeException("Unable to create catalogItem due to system. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+      throw new RuntimeException("Unable to create catalogItem due to catalog. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    specificItem = new ArrayList<ShipmentItem>();
+    specificReceivedItems = new ArrayList<ShipmentItem>();
     if (aLoyaltyPoints<1||aLoyaltyPoints>5)
     {
       throw new RuntimeException("Please provide a valid loyaltyPoints [loyaltyPoints>=1&&loyaltyPoints<=5]");
@@ -195,38 +195,38 @@ public class ClothingItem
     return index;
   }
   /* Code from template association_GetOne */
-  public FashionStoreManagementApp getSystem()
+  public FashionStoreManagementApp getCatalog()
   {
-    return system;
+    return catalog;
   }
   /* Code from template association_GetMany */
-  public ShipmentItem getSpecificItem(int index)
+  public ShipmentItem getSpecificReceivedItem(int index)
   {
-    ShipmentItem aSpecificItem = specificItem.get(index);
-    return aSpecificItem;
+    ShipmentItem aSpecificReceivedItem = specificReceivedItems.get(index);
+    return aSpecificReceivedItem;
   }
 
-  public List<ShipmentItem> getSpecificItem()
+  public List<ShipmentItem> getSpecificReceivedItems()
   {
-    List<ShipmentItem> newSpecificItem = Collections.unmodifiableList(specificItem);
-    return newSpecificItem;
+    List<ShipmentItem> newSpecificReceivedItems = Collections.unmodifiableList(specificReceivedItems);
+    return newSpecificReceivedItems;
   }
 
-  public int numberOfSpecificItem()
+  public int numberOfSpecificReceivedItems()
   {
-    int number = specificItem.size();
+    int number = specificReceivedItems.size();
     return number;
   }
 
-  public boolean hasSpecificItem()
+  public boolean hasSpecificReceivedItems()
   {
-    boolean has = specificItem.size() > 0;
+    boolean has = specificReceivedItems.size() > 0;
     return has;
   }
 
-  public int indexOfSpecificItem(ShipmentItem aSpecificItem)
+  public int indexOfSpecificReceivedItem(ShipmentItem aSpecificReceivedItem)
   {
-    int index = specificItem.indexOf(aSpecificItem);
+    int index = specificReceivedItems.indexOf(aSpecificReceivedItem);
     return index;
   }
   /* Code from template association_IsNumberOfValidMethod */
@@ -400,38 +400,38 @@ public class ClothingItem
     return wasAdded;
   }
   /* Code from template association_SetOneToMany */
-  public boolean setSystem(FashionStoreManagementApp aSystem)
+  public boolean setCatalog(FashionStoreManagementApp aCatalog)
   {
     boolean wasSet = false;
-    if (aSystem == null)
+    if (aCatalog == null)
     {
       return wasSet;
     }
 
-    FashionStoreManagementApp existingSystem = system;
-    system = aSystem;
-    if (existingSystem != null && !existingSystem.equals(aSystem))
+    FashionStoreManagementApp existingCatalog = catalog;
+    catalog = aCatalog;
+    if (existingCatalog != null && !existingCatalog.equals(aCatalog))
     {
-      existingSystem.removeCatalogItem(this);
+      existingCatalog.removeCatalogItem(this);
     }
-    system.addCatalogItem(this);
+    catalog.addCatalogItem(this);
     wasSet = true;
     return wasSet;
   }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfSpecificItem()
+  public static int minimumNumberOfSpecificReceivedItems()
   {
     return 0;
   }
   /* Code from template association_MaximumNumberOfMethod */
-  public static int maximumNumberOfSpecificItem()
+  public static int maximumNumberOfSpecificReceivedItems()
   {
     return 4;
   }
   /* Code from template association_AddOptionalNToOne */
-  public ShipmentItem addSpecificItem(Size aSize, int aQuantity, Shipment aOrderedShipment)
+  public ShipmentItem addSpecificReceivedItem(Size aSize, int aQuantity, Shipment aOrderedShipment)
   {
-    if (numberOfSpecificItem() >= maximumNumberOfSpecificItem())
+    if (numberOfSpecificReceivedItems() >= maximumNumberOfSpecificReceivedItems())
     {
       return null;
     }
@@ -441,69 +441,69 @@ public class ClothingItem
     }
   }
 
-  public boolean addSpecificItem(ShipmentItem aSpecificItem)
+  public boolean addSpecificReceivedItem(ShipmentItem aSpecificReceivedItem)
   {
     boolean wasAdded = false;
-    if (specificItem.contains(aSpecificItem)) { return false; }
-    if (numberOfSpecificItem() >= maximumNumberOfSpecificItem())
+    if (specificReceivedItems.contains(aSpecificReceivedItem)) { return false; }
+    if (numberOfSpecificReceivedItems() >= maximumNumberOfSpecificReceivedItems())
     {
       return wasAdded;
     }
 
-    ClothingItem existingItemToShip = aSpecificItem.getItemToShip();
-    boolean isNewItemToShip = existingItemToShip != null && !this.equals(existingItemToShip);
-    if (isNewItemToShip)
+    ClothingItem existingItemTypeToShip = aSpecificReceivedItem.getItemTypeToShip();
+    boolean isNewItemTypeToShip = existingItemTypeToShip != null && !this.equals(existingItemTypeToShip);
+    if (isNewItemTypeToShip)
     {
-      aSpecificItem.setItemToShip(this);
+      aSpecificReceivedItem.setItemTypeToShip(this);
     }
     else
     {
-      specificItem.add(aSpecificItem);
+      specificReceivedItems.add(aSpecificReceivedItem);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeSpecificItem(ShipmentItem aSpecificItem)
+  public boolean removeSpecificReceivedItem(ShipmentItem aSpecificReceivedItem)
   {
     boolean wasRemoved = false;
-    //Unable to remove aSpecificItem, as it must always have a itemToShip
-    if (!this.equals(aSpecificItem.getItemToShip()))
+    //Unable to remove aSpecificReceivedItem, as it must always have a itemTypeToShip
+    if (!this.equals(aSpecificReceivedItem.getItemTypeToShip()))
     {
-      specificItem.remove(aSpecificItem);
+      specificReceivedItems.remove(aSpecificReceivedItem);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addSpecificItemAt(ShipmentItem aSpecificItem, int index)
+  public boolean addSpecificReceivedItemAt(ShipmentItem aSpecificReceivedItem, int index)
   {  
     boolean wasAdded = false;
-    if(addSpecificItem(aSpecificItem))
+    if(addSpecificReceivedItem(aSpecificReceivedItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfSpecificItem()) { index = numberOfSpecificItem() - 1; }
-      specificItem.remove(aSpecificItem);
-      specificItem.add(index, aSpecificItem);
+      if(index > numberOfSpecificReceivedItems()) { index = numberOfSpecificReceivedItems() - 1; }
+      specificReceivedItems.remove(aSpecificReceivedItem);
+      specificReceivedItems.add(index, aSpecificReceivedItem);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveSpecificItemAt(ShipmentItem aSpecificItem, int index)
+  public boolean addOrMoveSpecificReceivedItemAt(ShipmentItem aSpecificReceivedItem, int index)
   {
     boolean wasAdded = false;
-    if(specificItem.contains(aSpecificItem))
+    if(specificReceivedItems.contains(aSpecificReceivedItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfSpecificItem()) { index = numberOfSpecificItem() - 1; }
-      specificItem.remove(aSpecificItem);
-      specificItem.add(index, aSpecificItem);
+      if(index > numberOfSpecificReceivedItems()) { index = numberOfSpecificReceivedItems() - 1; }
+      specificReceivedItems.remove(aSpecificReceivedItem);
+      specificReceivedItems.add(index, aSpecificReceivedItem);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addSpecificItemAt(aSpecificItem, index);
+      wasAdded = addSpecificReceivedItemAt(aSpecificReceivedItem, index);
     }
     return wasAdded;
   }
@@ -521,16 +521,16 @@ public class ClothingItem
       CartItem aCartItem = cartItems.get(i - 1);
       aCartItem.delete();
     }
-    FashionStoreManagementApp placeholderSystem = system;
-    this.system = null;
-    if(placeholderSystem != null)
+    FashionStoreManagementApp placeholderCatalog = catalog;
+    this.catalog = null;
+    if(placeholderCatalog != null)
     {
-      placeholderSystem.removeCatalogItem(this);
+      placeholderCatalog.removeCatalogItem(this);
     }
-    for(int i=specificItem.size(); i > 0; i--)
+    for(int i=specificReceivedItems.size(); i > 0; i--)
     {
-      ShipmentItem aSpecificItem = specificItem.get(i - 1);
-      aSpecificItem.delete();
+      ShipmentItem aSpecificReceivedItem = specificReceivedItems.get(i - 1);
+      aSpecificReceivedItem.delete();
     }
   }
 
@@ -541,6 +541,6 @@ public class ClothingItem
             "name" + ":" + getName()+ "," +
             "price" + ":" + getPrice()+ "," +
             "loyaltyPoints" + ":" + getLoyaltyPoints()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "system = "+(getSystem()!=null?Integer.toHexString(System.identityHashCode(getSystem())):"null");
+            "  " + "catalog = "+(getCatalog()!=null?Integer.toHexString(System.identityHashCode(getCatalog())):"null");
   }
 }

@@ -3,10 +3,7 @@
 
 
 
-/**
- * class Inventory {}
- */
-// line 60 "FashionProjectManagementApp.ump"
+// line 58 "FashionProjectManagementApp.ump"
 public class CartItem
 {
 

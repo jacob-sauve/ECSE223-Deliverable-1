@@ -4,7 +4,7 @@
 
 import java.util.*;
 
-// line 77 "FashionProjectManagementApp.ump"
+// line 73 "FashionProjectManagementApp.ump"
 public class Shipment
 {
 
@@ -22,9 +22,8 @@ public class Shipment
   private boolean shipped;
 
   //Shipment Associations
-  private List<ShipmentItem> itemsInShipment;
+  private List<ShipmentItem> shippedItems;
   private Manager shipmentManager;
-  private List<InventoryItem> updatedInventoryItems;
 
   //------------------------
   // CONSTRUCTOR
@@ -33,13 +32,12 @@ public class Shipment
   public Shipment(boolean aShipped, Manager aShipmentManager)
   {
     shipped = aShipped;
-    itemsInShipment = new ArrayList<ShipmentItem>();
+    shippedItems = new ArrayList<ShipmentItem>();
     boolean didAddShipmentManager = setShipmentManager(aShipmentManager);
     if (!didAddShipmentManager)
     {
       throw new RuntimeException("Unable to create shipment due to shipmentManager. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    updatedInventoryItems = new ArrayList<InventoryItem>();
   }
 
   //------------------------
@@ -64,33 +62,33 @@ public class Shipment
     return shipped;
   }
   /* Code from template association_GetMany */
-  public ShipmentItem getItemsInShipment(int index)
+  public ShipmentItem getShippedItem(int index)
   {
-    ShipmentItem aItemsInShipment = itemsInShipment.get(index);
-    return aItemsInShipment;
+    ShipmentItem aShippedItem = shippedItems.get(index);
+    return aShippedItem;
   }
 
-  public List<ShipmentItem> getItemsInShipment()
+  public List<ShipmentItem> getShippedItems()
   {
-    List<ShipmentItem> newItemsInShipment = Collections.unmodifiableList(itemsInShipment);
-    return newItemsInShipment;
+    List<ShipmentItem> newShippedItems = Collections.unmodifiableList(shippedItems);
+    return newShippedItems;
   }
 
-  public int numberOfItemsInShipment()
+  public int numberOfShippedItems()
   {
-    int number = itemsInShipment.size();
+    int number = shippedItems.size();
     return number;
   }
 
-  public boolean hasItemsInShipment()
+  public boolean hasShippedItems()
   {
-    boolean has = itemsInShipment.size() > 0;
+    boolean has = shippedItems.size() > 0;
     return has;
   }
 
-  public int indexOfItemsInShipment(ShipmentItem aItemsInShipment)
+  public int indexOfShippedItem(ShipmentItem aShippedItem)
   {
-    int index = itemsInShipment.indexOf(aItemsInShipment);
+    int index = shippedItems.indexOf(aShippedItem);
     return index;
   }
   /* Code from template association_GetOne */
@@ -98,105 +96,75 @@ public class Shipment
   {
     return shipmentManager;
   }
-  /* Code from template association_GetMany */
-  public InventoryItem getUpdatedInventoryItem(int index)
-  {
-    InventoryItem aUpdatedInventoryItem = updatedInventoryItems.get(index);
-    return aUpdatedInventoryItem;
-  }
-
-  public List<InventoryItem> getUpdatedInventoryItems()
-  {
-    List<InventoryItem> newUpdatedInventoryItems = Collections.unmodifiableList(updatedInventoryItems);
-    return newUpdatedInventoryItems;
-  }
-
-  public int numberOfUpdatedInventoryItems()
-  {
-    int number = updatedInventoryItems.size();
-    return number;
-  }
-
-  public boolean hasUpdatedInventoryItems()
-  {
-    boolean has = updatedInventoryItems.size() > 0;
-    return has;
-  }
-
-  public int indexOfUpdatedInventoryItem(InventoryItem aUpdatedInventoryItem)
-  {
-    int index = updatedInventoryItems.indexOf(aUpdatedInventoryItem);
-    return index;
-  }
   /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfItemsInShipment()
+  public static int minimumNumberOfShippedItems()
   {
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public ShipmentItem addItemsInShipment(Size aSize, int aQuantity, ClothingItem aItemToShip)
+  public ShipmentItem addShippedItem(Size aSize, int aQuantity, ClothingItem aItemTypeToShip)
   {
-    return new ShipmentItem(aSize, aQuantity, this, aItemToShip);
+    return new ShipmentItem(aSize, aQuantity, this, aItemTypeToShip);
   }
 
-  public boolean addItemsInShipment(ShipmentItem aItemsInShipment)
+  public boolean addShippedItem(ShipmentItem aShippedItem)
   {
     boolean wasAdded = false;
-    if (itemsInShipment.contains(aItemsInShipment)) { return false; }
-    Shipment existingOrderedShipment = aItemsInShipment.getOrderedShipment();
+    if (shippedItems.contains(aShippedItem)) { return false; }
+    Shipment existingOrderedShipment = aShippedItem.getOrderedShipment();
     boolean isNewOrderedShipment = existingOrderedShipment != null && !this.equals(existingOrderedShipment);
     if (isNewOrderedShipment)
     {
-      aItemsInShipment.setOrderedShipment(this);
+      aShippedItem.setOrderedShipment(this);
     }
     else
     {
-      itemsInShipment.add(aItemsInShipment);
+      shippedItems.add(aShippedItem);
     }
     wasAdded = true;
     return wasAdded;
   }
 
-  public boolean removeItemsInShipment(ShipmentItem aItemsInShipment)
+  public boolean removeShippedItem(ShipmentItem aShippedItem)
   {
     boolean wasRemoved = false;
-    //Unable to remove aItemsInShipment, as it must always have a orderedShipment
-    if (!this.equals(aItemsInShipment.getOrderedShipment()))
+    //Unable to remove aShippedItem, as it must always have a orderedShipment
+    if (!this.equals(aShippedItem.getOrderedShipment()))
     {
-      itemsInShipment.remove(aItemsInShipment);
+      shippedItems.remove(aShippedItem);
       wasRemoved = true;
     }
     return wasRemoved;
   }
   /* Code from template association_AddIndexControlFunctions */
-  public boolean addItemsInShipmentAt(ShipmentItem aItemsInShipment, int index)
+  public boolean addShippedItemAt(ShipmentItem aShippedItem, int index)
   {  
     boolean wasAdded = false;
-    if(addItemsInShipment(aItemsInShipment))
+    if(addShippedItem(aShippedItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfItemsInShipment()) { index = numberOfItemsInShipment() - 1; }
-      itemsInShipment.remove(aItemsInShipment);
-      itemsInShipment.add(index, aItemsInShipment);
+      if(index > numberOfShippedItems()) { index = numberOfShippedItems() - 1; }
+      shippedItems.remove(aShippedItem);
+      shippedItems.add(index, aShippedItem);
       wasAdded = true;
     }
     return wasAdded;
   }
 
-  public boolean addOrMoveItemsInShipmentAt(ShipmentItem aItemsInShipment, int index)
+  public boolean addOrMoveShippedItemAt(ShipmentItem aShippedItem, int index)
   {
     boolean wasAdded = false;
-    if(itemsInShipment.contains(aItemsInShipment))
+    if(shippedItems.contains(aShippedItem))
     {
       if(index < 0 ) { index = 0; }
-      if(index > numberOfItemsInShipment()) { index = numberOfItemsInShipment() - 1; }
-      itemsInShipment.remove(aItemsInShipment);
-      itemsInShipment.add(index, aItemsInShipment);
+      if(index > numberOfShippedItems()) { index = numberOfShippedItems() - 1; }
+      shippedItems.remove(aShippedItem);
+      shippedItems.add(index, aShippedItem);
       wasAdded = true;
     } 
     else 
     {
-      wasAdded = addItemsInShipmentAt(aItemsInShipment, index);
+      wasAdded = addShippedItemAt(aShippedItem, index);
     }
     return wasAdded;
   }
@@ -219,96 +187,14 @@ public class Shipment
     wasSet = true;
     return wasSet;
   }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfUpdatedInventoryItems()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addUpdatedInventoryItem(InventoryItem aUpdatedInventoryItem)
-  {
-    boolean wasAdded = false;
-    if (updatedInventoryItems.contains(aUpdatedInventoryItem)) { return false; }
-    updatedInventoryItems.add(aUpdatedInventoryItem);
-    if (aUpdatedInventoryItem.indexOfShipment(this) != -1)
-    {
-      wasAdded = true;
-    }
-    else
-    {
-      wasAdded = aUpdatedInventoryItem.addShipment(this);
-      if (!wasAdded)
-      {
-        updatedInventoryItems.remove(aUpdatedInventoryItem);
-      }
-    }
-    return wasAdded;
-  }
-  /* Code from template association_RemoveMany */
-  public boolean removeUpdatedInventoryItem(InventoryItem aUpdatedInventoryItem)
-  {
-    boolean wasRemoved = false;
-    if (!updatedInventoryItems.contains(aUpdatedInventoryItem))
-    {
-      return wasRemoved;
-    }
-
-    int oldIndex = updatedInventoryItems.indexOf(aUpdatedInventoryItem);
-    updatedInventoryItems.remove(oldIndex);
-    if (aUpdatedInventoryItem.indexOfShipment(this) == -1)
-    {
-      wasRemoved = true;
-    }
-    else
-    {
-      wasRemoved = aUpdatedInventoryItem.removeShipment(this);
-      if (!wasRemoved)
-      {
-        updatedInventoryItems.add(oldIndex,aUpdatedInventoryItem);
-      }
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addUpdatedInventoryItemAt(InventoryItem aUpdatedInventoryItem, int index)
-  {  
-    boolean wasAdded = false;
-    if(addUpdatedInventoryItem(aUpdatedInventoryItem))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfUpdatedInventoryItems()) { index = numberOfUpdatedInventoryItems() - 1; }
-      updatedInventoryItems.remove(aUpdatedInventoryItem);
-      updatedInventoryItems.add(index, aUpdatedInventoryItem);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveUpdatedInventoryItemAt(InventoryItem aUpdatedInventoryItem, int index)
-  {
-    boolean wasAdded = false;
-    if(updatedInventoryItems.contains(aUpdatedInventoryItem))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfUpdatedInventoryItems()) { index = numberOfUpdatedInventoryItems() - 1; }
-      updatedInventoryItems.remove(aUpdatedInventoryItem);
-      updatedInventoryItems.add(index, aUpdatedInventoryItem);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addUpdatedInventoryItemAt(aUpdatedInventoryItem, index);
-    }
-    return wasAdded;
-  }
 
   public void delete()
   {
-    while (itemsInShipment.size() > 0)
+    while (shippedItems.size() > 0)
     {
-      ShipmentItem aItemsInShipment = itemsInShipment.get(itemsInShipment.size() - 1);
-      aItemsInShipment.delete();
-      itemsInShipment.remove(aItemsInShipment);
+      ShipmentItem aShippedItem = shippedItems.get(shippedItems.size() - 1);
+      aShippedItem.delete();
+      shippedItems.remove(aShippedItem);
     }
     
     Manager placeholderShipmentManager = shipmentManager;
@@ -316,12 +202,6 @@ public class Shipment
     if(placeholderShipmentManager != null)
     {
       placeholderShipmentManager.removeShipment(this);
-    }
-    ArrayList<InventoryItem> copyOfUpdatedInventoryItems = new ArrayList<InventoryItem>(updatedInventoryItems);
-    updatedInventoryItems.clear();
-    for(InventoryItem aUpdatedInventoryItem : copyOfUpdatedInventoryItems)
-    {
-      aUpdatedInventoryItem.removeShipment(this);
     }
   }
 

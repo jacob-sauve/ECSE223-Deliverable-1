@@ -2,7 +2,6 @@
 /*This code was generated using the UMPLE 1.33.0.6934.a386b0a58 modeling language!*/
 
 
-import java.util.*;
 
 // line 53 "FashionProjectManagementApp.ump"
 public class InventoryItem
@@ -24,8 +23,7 @@ public class InventoryItem
 
   //InventoryItem Associations
   private ClothingItem catalogItem;
-  private FashionStoreManagementApp system;
-  private List<Shipment> shipments;
+  private FashionStoreManagementApp inventory;
 
   //------------------------
   // CONSTRUCTOR
@@ -40,7 +38,6 @@ public class InventoryItem
     {
       throw new RuntimeException("Unable to create stockedSize due to catalogItem. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
-    shipments = new ArrayList<Shipment>();
   }
 
   //------------------------
@@ -78,45 +75,15 @@ public class InventoryItem
     return catalogItem;
   }
   /* Code from template association_GetOne */
-  public FashionStoreManagementApp getSystem()
+  public FashionStoreManagementApp getInventory()
   {
-    return system;
+    return inventory;
   }
 
-  public boolean hasSystem()
+  public boolean hasInventory()
   {
-    boolean has = system != null;
+    boolean has = inventory != null;
     return has;
-  }
-  /* Code from template association_GetMany */
-  public Shipment getShipment(int index)
-  {
-    Shipment aShipment = shipments.get(index);
-    return aShipment;
-  }
-
-  public List<Shipment> getShipments()
-  {
-    List<Shipment> newShipments = Collections.unmodifiableList(shipments);
-    return newShipments;
-  }
-
-  public int numberOfShipments()
-  {
-    int number = shipments.size();
-    return number;
-  }
-
-  public boolean hasShipments()
-  {
-    boolean has = shipments.size() > 0;
-    return has;
-  }
-
-  public int indexOfShipment(Shipment aShipment)
-  {
-    int index = shipments.indexOf(aShipment);
-    return index;
   }
   /* Code from template association_SetOneToAtMostN */
   public boolean setCatalogItem(ClothingItem aCatalogItem)
@@ -150,103 +117,21 @@ public class InventoryItem
     return wasSet;
   }
   /* Code from template association_SetOptionalOneToMany */
-  public boolean setSystem(FashionStoreManagementApp aSystem)
+  public boolean setInventory(FashionStoreManagementApp aInventory)
   {
     boolean wasSet = false;
-    FashionStoreManagementApp existingSystem = system;
-    system = aSystem;
-    if (existingSystem != null && !existingSystem.equals(aSystem))
+    FashionStoreManagementApp existingInventory = inventory;
+    inventory = aInventory;
+    if (existingInventory != null && !existingInventory.equals(aInventory))
     {
-      existingSystem.removeStockedItem(this);
+      existingInventory.removeStockedItem(this);
     }
-    if (aSystem != null)
+    if (aInventory != null)
     {
-      aSystem.addStockedItem(this);
+      aInventory.addStockedItem(this);
     }
     wasSet = true;
     return wasSet;
-  }
-  /* Code from template association_MinimumNumberOfMethod */
-  public static int minimumNumberOfShipments()
-  {
-    return 0;
-  }
-  /* Code from template association_AddManyToManyMethod */
-  public boolean addShipment(Shipment aShipment)
-  {
-    boolean wasAdded = false;
-    if (shipments.contains(aShipment)) { return false; }
-    shipments.add(aShipment);
-    if (aShipment.indexOfUpdatedInventoryItem(this) != -1)
-    {
-      wasAdded = true;
-    }
-    else
-    {
-      wasAdded = aShipment.addUpdatedInventoryItem(this);
-      if (!wasAdded)
-      {
-        shipments.remove(aShipment);
-      }
-    }
-    return wasAdded;
-  }
-  /* Code from template association_RemoveMany */
-  public boolean removeShipment(Shipment aShipment)
-  {
-    boolean wasRemoved = false;
-    if (!shipments.contains(aShipment))
-    {
-      return wasRemoved;
-    }
-
-    int oldIndex = shipments.indexOf(aShipment);
-    shipments.remove(oldIndex);
-    if (aShipment.indexOfUpdatedInventoryItem(this) == -1)
-    {
-      wasRemoved = true;
-    }
-    else
-    {
-      wasRemoved = aShipment.removeUpdatedInventoryItem(this);
-      if (!wasRemoved)
-      {
-        shipments.add(oldIndex,aShipment);
-      }
-    }
-    return wasRemoved;
-  }
-  /* Code from template association_AddIndexControlFunctions */
-  public boolean addShipmentAt(Shipment aShipment, int index)
-  {  
-    boolean wasAdded = false;
-    if(addShipment(aShipment))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfShipments()) { index = numberOfShipments() - 1; }
-      shipments.remove(aShipment);
-      shipments.add(index, aShipment);
-      wasAdded = true;
-    }
-    return wasAdded;
-  }
-
-  public boolean addOrMoveShipmentAt(Shipment aShipment, int index)
-  {
-    boolean wasAdded = false;
-    if(shipments.contains(aShipment))
-    {
-      if(index < 0 ) { index = 0; }
-      if(index > numberOfShipments()) { index = numberOfShipments() - 1; }
-      shipments.remove(aShipment);
-      shipments.add(index, aShipment);
-      wasAdded = true;
-    } 
-    else 
-    {
-      wasAdded = addShipmentAt(aShipment, index);
-    }
-    return wasAdded;
   }
 
   public void delete()
@@ -257,17 +142,11 @@ public class InventoryItem
     {
       placeholderCatalogItem.removeStockedSize(this);
     }
-    if (system != null)
+    if (inventory != null)
     {
-      FashionStoreManagementApp placeholderSystem = system;
-      this.system = null;
-      placeholderSystem.removeStockedItem(this);
-    }
-    ArrayList<Shipment> copyOfShipments = new ArrayList<Shipment>(shipments);
-    shipments.clear();
-    for(Shipment aShipment : copyOfShipments)
-    {
-      aShipment.removeUpdatedInventoryItem(this);
+      FashionStoreManagementApp placeholderInventory = inventory;
+      this.inventory = null;
+      placeholderInventory.removeStockedItem(this);
     }
   }
 
@@ -278,6 +157,6 @@ public class InventoryItem
             "quantity" + ":" + getQuantity()+ "]" + System.getProperties().getProperty("line.separator") +
             "  " + "size" + "=" + (getSize() != null ? !getSize().equals(this)  ? getSize().toString().replaceAll("  ","    ") : "this" : "null") + System.getProperties().getProperty("line.separator") +
             "  " + "catalogItem = "+(getCatalogItem()!=null?Integer.toHexString(System.identityHashCode(getCatalogItem())):"null") + System.getProperties().getProperty("line.separator") +
-            "  " + "system = "+(getSystem()!=null?Integer.toHexString(System.identityHashCode(getSystem())):"null");
+            "  " + "inventory = "+(getInventory()!=null?Integer.toHexString(System.identityHashCode(getInventory())):"null");
   }
 }
