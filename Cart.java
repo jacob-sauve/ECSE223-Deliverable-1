@@ -37,9 +37,9 @@ public class Cart
     cartItems = new ArrayList<CartItem>();
   }
 
-  public Cart(String aUsernameForCustomer, String aPasswordForCustomer, User aPersonForCustomer, int aLoyaltyPointsForCustomer)
+  public Cart(String aUsernameForCustomer, String aPasswordForCustomer, User aPersonForCustomer, FashionStoreManagementApp aSystemForCustomer, int aLoyaltyPointsForCustomer)
   {
-    customer = new Customer(aUsernameForCustomer, aPasswordForCustomer, aPersonForCustomer, aLoyaltyPointsForCustomer, this);
+    customer = new Customer(aUsernameForCustomer, aPasswordForCustomer, aPersonForCustomer, aSystemForCustomer, aLoyaltyPointsForCustomer, this);
     cartItems = new ArrayList<CartItem>();
   }
 

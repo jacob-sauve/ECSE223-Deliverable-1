@@ -24,12 +24,13 @@ public class Shipment
   //Shipment Associations
   private List<ShipmentItem> shippedItems;
   private Manager shipmentManager;
+  private FashionStoreManagementApp system;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public Shipment(boolean aShipped, Manager aShipmentManager)
+  public Shipment(boolean aShipped, Manager aShipmentManager, FashionStoreManagementApp aSystem)
   {
     shipped = aShipped;
     shippedItems = new ArrayList<ShipmentItem>();
@@ -37,6 +38,11 @@ public class Shipment
     if (!didAddShipmentManager)
     {
       throw new RuntimeException("Unable to create shipment due to shipmentManager. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
+    boolean didAddSystem = setSystem(aSystem);
+    if (!didAddSystem)
+    {
+      throw new RuntimeException("Unable to create loggedShipment due to system. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
     }
   }
 
@@ -95,6 +101,11 @@ public class Shipment
   public Manager getShipmentManager()
   {
     return shipmentManager;
+  }
+  /* Code from template association_GetOne */
+  public FashionStoreManagementApp getSystem()
+  {
+    return system;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfShippedItems()
@@ -187,6 +198,25 @@ public class Shipment
     wasSet = true;
     return wasSet;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setSystem(FashionStoreManagementApp aSystem)
+  {
+    boolean wasSet = false;
+    if (aSystem == null)
+    {
+      return wasSet;
+    }
+
+    FashionStoreManagementApp existingSystem = system;
+    system = aSystem;
+    if (existingSystem != null && !existingSystem.equals(aSystem))
+    {
+      existingSystem.removeLoggedShipment(this);
+    }
+    system.addLoggedShipment(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -203,6 +233,12 @@ public class Shipment
     {
       placeholderShipmentManager.removeShipment(this);
     }
+    FashionStoreManagementApp placeholderSystem = system;
+    this.system = null;
+    if(placeholderSystem != null)
+    {
+      placeholderSystem.removeLoggedShipment(this);
+    }
   }
 
 
@@ -210,6 +246,7 @@ public class Shipment
   {
     return super.toString() + "["+
             "shipped" + ":" + getShipped()+ "]" + System.getProperties().getProperty("line.separator") +
-            "  " + "shipmentManager = "+(getShipmentManager()!=null?Integer.toHexString(System.identityHashCode(getShipmentManager())):"null");
+            "  " + "shipmentManager = "+(getShipmentManager()!=null?Integer.toHexString(System.identityHashCode(getShipmentManager())):"null") + System.getProperties().getProperty("line.separator") +
+            "  " + "system = "+(getSystem()!=null?Integer.toHexString(System.identityHashCode(getSystem())):"null");
   }
 }

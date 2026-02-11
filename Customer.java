@@ -24,9 +24,9 @@ public class Customer extends AccountType
   // CONSTRUCTOR
   //------------------------
 
-  public Customer(String aUsername, String aPassword, User aPerson, int aLoyaltyPoints, Cart aCart)
+  public Customer(String aUsername, String aPassword, User aPerson, FashionStoreManagementApp aSystem, int aLoyaltyPoints, Cart aCart)
   {
-    super(aUsername, aPassword, aPerson);
+    super(aUsername, aPassword, aPerson, aSystem);
     loyaltyPoints = aLoyaltyPoints;
     shippingAddresses = new ArrayList<Address>();
     if (aCart == null || aCart.getCustomer() != null)
@@ -37,9 +37,9 @@ public class Customer extends AccountType
     paidOrders = new ArrayList<Order>();
   }
 
-  public Customer(String aUsername, String aPassword, User aPerson, int aLoyaltyPoints)
+  public Customer(String aUsername, String aPassword, User aPerson, FashionStoreManagementApp aSystem, int aLoyaltyPoints)
   {
-    super(aUsername, aPassword, aPerson);
+    super(aUsername, aPassword, aPerson, aSystem);
     loyaltyPoints = aLoyaltyPoints;
     shippingAddresses = new ArrayList<Address>();
     cart = new Cart(this);
@@ -138,54 +138,96 @@ public class Customer extends AccountType
   {
     return 1;
   }
-  /* Code from template association_AddMandatoryManyToOne */
-  public Address addShippingAddress(String aAddressLineOne, String aPostalCode, String aCity, String aCountry)
-  {
-    Address aNewShippingAddress = new Address(aAddressLineOne, aPostalCode, aCity, aCountry, this);
-    return aNewShippingAddress;
-  }
-
+  /* Code from template association_AddManyToManyMethod */
   public boolean addShippingAddress(Address aShippingAddress)
   {
     boolean wasAdded = false;
     if (shippingAddresses.contains(aShippingAddress)) { return false; }
-    Customer existingCustomer = aShippingAddress.getCustomer();
-    boolean isNewCustomer = existingCustomer != null && !this.equals(existingCustomer);
-
-    if (isNewCustomer && existingCustomer.numberOfShippingAddresses() <= minimumNumberOfShippingAddresses())
+    shippingAddresses.add(aShippingAddress);
+    if (aShippingAddress.indexOfCustomer(this) != -1)
     {
-      return wasAdded;
-    }
-    if (isNewCustomer)
-    {
-      aShippingAddress.setCustomer(this);
+      wasAdded = true;
     }
     else
     {
-      shippingAddresses.add(aShippingAddress);
+      wasAdded = aShippingAddress.addCustomer(this);
+      if (!wasAdded)
+      {
+        shippingAddresses.remove(aShippingAddress);
+      }
     }
-    wasAdded = true;
     return wasAdded;
   }
-
+  /* Code from template association_AddMStarToMany */
   public boolean removeShippingAddress(Address aShippingAddress)
   {
     boolean wasRemoved = false;
-    //Unable to remove aShippingAddress, as it must always have a customer
-    if (this.equals(aShippingAddress.getCustomer()))
+    if (!shippingAddresses.contains(aShippingAddress))
     {
       return wasRemoved;
     }
 
-    //customer already at minimum (1)
     if (numberOfShippingAddresses() <= minimumNumberOfShippingAddresses())
     {
       return wasRemoved;
     }
 
-    shippingAddresses.remove(aShippingAddress);
-    wasRemoved = true;
+    int oldIndex = shippingAddresses.indexOf(aShippingAddress);
+    shippingAddresses.remove(oldIndex);
+    if (aShippingAddress.indexOfCustomer(this) == -1)
+    {
+      wasRemoved = true;
+    }
+    else
+    {
+      wasRemoved = aShippingAddress.removeCustomer(this);
+      if (!wasRemoved)
+      {
+        shippingAddresses.add(oldIndex,aShippingAddress);
+      }
+    }
     return wasRemoved;
+  }
+  /* Code from template association_SetMStarToMany */
+  public boolean setShippingAddresses(Address... newShippingAddresses)
+  {
+    boolean wasSet = false;
+    ArrayList<Address> verifiedShippingAddresses = new ArrayList<Address>();
+    for (Address aShippingAddress : newShippingAddresses)
+    {
+      if (verifiedShippingAddresses.contains(aShippingAddress))
+      {
+        continue;
+      }
+      verifiedShippingAddresses.add(aShippingAddress);
+    }
+
+    if (verifiedShippingAddresses.size() != newShippingAddresses.length || verifiedShippingAddresses.size() < minimumNumberOfShippingAddresses())
+    {
+      return wasSet;
+    }
+
+    ArrayList<Address> oldShippingAddresses = new ArrayList<Address>(shippingAddresses);
+    shippingAddresses.clear();
+    for (Address aNewShippingAddress : verifiedShippingAddresses)
+    {
+      shippingAddresses.add(aNewShippingAddress);
+      if (oldShippingAddresses.contains(aNewShippingAddress))
+      {
+        oldShippingAddresses.remove(aNewShippingAddress);
+      }
+      else
+      {
+        aNewShippingAddress.addCustomer(this);
+      }
+    }
+
+    for (Address anOldShippingAddress : oldShippingAddresses)
+    {
+      anOldShippingAddress.removeCustomer(this);
+    }
+    wasSet = true;
+    return wasSet;
   }
   /* Code from template association_AddIndexControlFunctions */
   public boolean addShippingAddressAt(Address aShippingAddress, int index)
@@ -225,9 +267,9 @@ public class Customer extends AccountType
     return 0;
   }
   /* Code from template association_AddManyToOne */
-  public Order addPaidOrder(int aOrderNumber, int aShippingDelay, Manager aManager, Employee aItemGatherer, Cart aPaidCart, Address aDeliveryAddress)
+  public Order addPaidOrder(int aOrderNumber, int aShippingDelay, Manager aManager, Employee aItemGatherer, Cart aPaidCart, Address aDeliveryAddress, FashionStoreManagementApp aSystem)
   {
-    return new Order(aOrderNumber, aShippingDelay, this, aManager, aItemGatherer, aPaidCart, aDeliveryAddress);
+    return new Order(aOrderNumber, aShippingDelay, this, aManager, aItemGatherer, aPaidCart, aDeliveryAddress, aSystem);
   }
 
   public boolean addPaidOrder(Order aPaidOrder)
@@ -294,10 +336,18 @@ public class Customer extends AccountType
 
   public void delete()
   {
-    for(int i=shippingAddresses.size(); i > 0; i--)
+    ArrayList<Address> copyOfShippingAddresses = new ArrayList<Address>(shippingAddresses);
+    shippingAddresses.clear();
+    for(Address aShippingAddress : copyOfShippingAddresses)
     {
-      Address aShippingAddress = shippingAddresses.get(i - 1);
-      aShippingAddress.delete();
+      if (aShippingAddress.numberOfCustomers() <= Address.minimumNumberOfCustomers())
+      {
+        aShippingAddress.delete();
+      }
+      else
+      {
+        aShippingAddress.removeCustomer(this);
+      }
     }
     Cart existingCart = cart;
     cart = null;
