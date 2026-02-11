@@ -104,7 +104,8 @@ association {
   1 Shipment orderedShipment <@>- * ShipmentItem shippedItems;
   1 ClothingItem itemTypeToShip -- 0..4 ShipmentItem specificReceivedItems;
   1 Manager shipmentManager -- * Shipment shipments;
-  //* Shipment shipments -- * InventoryItem updatedInventoryItems;
   1 Manager storeManager -- * Employee managedEmployees;
   1 Address deliveryAddress -- * Order;
+// Users and the app have tied lifecycles
+  1 FashionStoreManagementApp system -- * User users;
 }

@@ -18,16 +18,22 @@ public class User
 
   //User Associations
   private List<AccountType> storeRoles;
+  private FashionStoreManagementApp system;
 
   //------------------------
   // CONSTRUCTOR
   //------------------------
 
-  public User()
+  public User(FashionStoreManagementApp aSystem)
   {
     name = null;
     phoneNumber = null;
     storeRoles = new ArrayList<AccountType>();
+    boolean didAddSystem = setSystem(aSystem);
+    if (!didAddSystem)
+    {
+      throw new RuntimeException("Unable to create user due to system. See http://manual.umple.org?RE002ViolationofAssociationMultiplicity.html");
+    }
   }
 
   //------------------------
@@ -88,6 +94,11 @@ public class User
   {
     int index = storeRoles.indexOf(aStoreRole);
     return index;
+  }
+  /* Code from template association_GetOne */
+  public FashionStoreManagementApp getSystem()
+  {
+    return system;
   }
   /* Code from template association_MinimumNumberOfMethod */
   public static int minimumNumberOfStoreRoles()
@@ -168,6 +179,25 @@ public class User
     }
     return wasAdded;
   }
+  /* Code from template association_SetOneToMany */
+  public boolean setSystem(FashionStoreManagementApp aSystem)
+  {
+    boolean wasSet = false;
+    if (aSystem == null)
+    {
+      return wasSet;
+    }
+
+    FashionStoreManagementApp existingSystem = system;
+    system = aSystem;
+    if (existingSystem != null && !existingSystem.equals(aSystem))
+    {
+      existingSystem.removeUser(this);
+    }
+    system.addUser(this);
+    wasSet = true;
+    return wasSet;
+  }
 
   public void delete()
   {
@@ -176,6 +206,12 @@ public class User
       AccountType aStoreRole = storeRoles.get(i - 1);
       aStoreRole.delete();
     }
+    FashionStoreManagementApp placeholderSystem = system;
+    this.system = null;
+    if(placeholderSystem != null)
+    {
+      placeholderSystem.removeUser(this);
+    }
   }
 
 
@@ -183,6 +219,7 @@ public class User
   {
     return super.toString() + "["+
             "name" + ":" + getName()+ "," +
-            "phoneNumber" + ":" + getPhoneNumber()+ "]";
+            "phoneNumber" + ":" + getPhoneNumber()+ "]" + System.getProperties().getProperty("line.separator") +
+            "  " + "system = "+(getSystem()!=null?Integer.toHexString(System.identityHashCode(getSystem())):"null");
   }
 }

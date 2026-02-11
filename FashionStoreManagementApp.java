@@ -22,6 +22,7 @@ public class FashionStoreManagementApp
   private Manager storeManager;
   private List<ClothingItem> catalogItems;
   private List<InventoryItem> stockedItems;
+  private List<User> users;
 
   //------------------------
   // CONSTRUCTOR
@@ -36,6 +37,7 @@ public class FashionStoreManagementApp
     storeManager = aStoreManager;
     catalogItems = new ArrayList<ClothingItem>();
     stockedItems = new ArrayList<InventoryItem>();
+    users = new ArrayList<User>();
   }
 
   public FashionStoreManagementApp(String aUsernameForStoreManager, String aPasswordForStoreManager, User aPersonForStoreManager)
@@ -43,6 +45,7 @@ public class FashionStoreManagementApp
     storeManager = new Manager(aUsernameForStoreManager, aPasswordForStoreManager, aPersonForStoreManager, this);
     catalogItems = new ArrayList<ClothingItem>();
     stockedItems = new ArrayList<InventoryItem>();
+    users = new ArrayList<User>();
   }
 
   //------------------------
@@ -111,6 +114,36 @@ public class FashionStoreManagementApp
   public int indexOfStockedItem(InventoryItem aStockedItem)
   {
     int index = stockedItems.indexOf(aStockedItem);
+    return index;
+  }
+  /* Code from template association_GetMany */
+  public User getUser(int index)
+  {
+    User aUser = users.get(index);
+    return aUser;
+  }
+
+  public List<User> getUsers()
+  {
+    List<User> newUsers = Collections.unmodifiableList(users);
+    return newUsers;
+  }
+
+  public int numberOfUsers()
+  {
+    int number = users.size();
+    return number;
+  }
+
+  public boolean hasUsers()
+  {
+    boolean has = users.size() > 0;
+    return has;
+  }
+
+  public int indexOfUser(User aUser)
+  {
+    int index = users.indexOf(aUser);
     return index;
   }
   /* Code from template association_MinimumNumberOfMethod */
@@ -256,6 +289,78 @@ public class FashionStoreManagementApp
     }
     return wasAdded;
   }
+  /* Code from template association_MinimumNumberOfMethod */
+  public static int minimumNumberOfUsers()
+  {
+    return 0;
+  }
+  /* Code from template association_AddManyToOne */
+  public User addUser()
+  {
+    return new User(this);
+  }
+
+  public boolean addUser(User aUser)
+  {
+    boolean wasAdded = false;
+    if (users.contains(aUser)) { return false; }
+    FashionStoreManagementApp existingSystem = aUser.getSystem();
+    boolean isNewSystem = existingSystem != null && !this.equals(existingSystem);
+    if (isNewSystem)
+    {
+      aUser.setSystem(this);
+    }
+    else
+    {
+      users.add(aUser);
+    }
+    wasAdded = true;
+    return wasAdded;
+  }
+
+  public boolean removeUser(User aUser)
+  {
+    boolean wasRemoved = false;
+    //Unable to remove aUser, as it must always have a system
+    if (!this.equals(aUser.getSystem()))
+    {
+      users.remove(aUser);
+      wasRemoved = true;
+    }
+    return wasRemoved;
+  }
+  /* Code from template association_AddIndexControlFunctions */
+  public boolean addUserAt(User aUser, int index)
+  {  
+    boolean wasAdded = false;
+    if(addUser(aUser))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfUsers()) { index = numberOfUsers() - 1; }
+      users.remove(aUser);
+      users.add(index, aUser);
+      wasAdded = true;
+    }
+    return wasAdded;
+  }
+
+  public boolean addOrMoveUserAt(User aUser, int index)
+  {
+    boolean wasAdded = false;
+    if(users.contains(aUser))
+    {
+      if(index < 0 ) { index = 0; }
+      if(index > numberOfUsers()) { index = numberOfUsers() - 1; }
+      users.remove(aUser);
+      users.add(index, aUser);
+      wasAdded = true;
+    } 
+    else 
+    {
+      wasAdded = addUserAt(aUser, index);
+    }
+    return wasAdded;
+  }
 
   public void delete()
   {
@@ -279,6 +384,11 @@ public class FashionStoreManagementApp
       stockedItems.remove(aStockedItem);
     }
     
+    for(int i=users.size(); i > 0; i--)
+    {
+      User aUser = users.get(i - 1);
+      aUser.delete();
+    }
   }
 
 }
