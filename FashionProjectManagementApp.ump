@@ -89,8 +89,7 @@ association {
 // to prevent having to instantiate AccountType (default case)
   1 User person -- 0..3 AccountType storeRoles;
 // all sizes added/removed at once to inventory
-  1 ClothingItem catalogItem -- 4 InventoryItem stockedSizes;
-  //1 Inventory storeInventory -- * InventoryItem stockedItems;
+  1 ClothingItem catalogItem <@>- 4 InventoryItem stockedSizes;
   1 Customer -- 1 Cart;
   1 Customer -- * Order paidOrders;
   1 Manager -- * Order ordersToAssign;
@@ -101,7 +100,7 @@ association {
 // all items offered by the store, including those out of stock
   * ClothingItem catalogItems -<@> 1 FashionStoreManagementApp catalog;
 // all sizes in stock and their quantities
-  * InventoryItem stockedItems -<@> 0..1 FashionStoreManagementApp inventory;
+  * InventoryItem stockedItems -- 0..1 FashionStoreManagementApp inventory;
   1 Shipment orderedShipment <@>- * ShipmentItem shippedItems;
   1 ClothingItem itemTypeToShip -- 0..4 ShipmentItem specificReceivedItems;
   1 Manager shipmentManager -- * Shipment shipments;
