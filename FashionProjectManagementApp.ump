@@ -29,17 +29,16 @@ class Manager {
 }
 
 class Address {
-  addressLineOne;
+  // assuming only city-wide shipping
+  streetAddress;
   postalCode;
-  city;
-  country;
 }
 
 class ClothingItem {
   unique String name;
   Double price;
-  Integer loyaltyPoints;
-  [loyaltyPoints >= 1 && loyaltyPoints <= 5]
+  Integer pointValue;
+  [1 <= pointValue && pointValue <= 5]
 }
 
 class LimitedItem {
@@ -71,8 +70,8 @@ class Order {
 }
 
 class Shipment {
-    Boolean shipped;
-    Date shippingDate;
+  // when true --> time to update InventoryItems
+    Boolean received;
 }
 
 class ShipmentItem {
@@ -83,29 +82,35 @@ class ShipmentItem {
 enum Size {S, M, L, XL}
 
 association {
-  1 Customer -- 1..* Address shippingAddresses;
+  1..* Customer client -- 1..* Address shippingAddresses;
 // only 1 manager account per system
   1 Manager storeManager -<@> 1 FashionStoreManagementApp system;
 // to prevent having to instantiate AccountType (default case)
   1 User person -- 0..3 AccountType storeRoles;
 // all sizes added/removed at once to inventory
-  1 ClothingItem catalogItem <@>- 4 InventoryItem stockedSizes;
-  1 Customer -- 1 Cart;
+  1 ClothingItem catalogItem -- 4 InventoryItem stockedSizes;
+  //1 Inventory storeInventory -- * InventoryItem stockedItems;
+  0..1 Customer -- 1 Cart;
   1 Customer -- * Order paidOrders;
-  1 Manager -- * Order ordersToAssign;
-  1 Employee itemGatherer -- * Order ordersToAssemble;
+  1 Manager -- * Order receivedOrders;
+  1 Employee orderAssembler -- * Order ordersToAssemble;
   1 Cart paidCart -- 0..1 Order placedOrder;
   1 Cart <@>- * CartItem;
-  0..4 CartItem -- 1 ClothingItem;
+  0..4 CartItem specificItems -- 1 ClothingItem itemType;
 // all items offered by the store, including those out of stock
   * ClothingItem catalogItems -<@> 1 FashionStoreManagementApp catalog;
 // all sizes in stock and their quantities
-  * InventoryItem stockedItems -- 0..1 FashionStoreManagementApp inventory;
+  * InventoryItem stockedItems -<@> 0..1 FashionStoreManagementApp inventory;
   1 Shipment orderedShipment <@>- * ShipmentItem shippedItems;
   1 ClothingItem itemTypeToShip -- 0..4 ShipmentItem specificReceivedItems;
   1 Manager shipmentManager -- * Shipment shipments;
   1 Manager storeManager -- * Employee managedEmployees;
-  1 Address deliveryAddress -- * Order;
-// Users and the app have tied lifecycles
-  1 FashionStoreManagementApp system -- * User users;
+  1 Address deliveryAddress -- * Order associatedOrders;
+// Ensuring that app deletion results in all objects being deleted
+// (tied lifecycles)
+  1 FashionStoreManagementApp system <@>- * User users;
+  1 FashionStoreManagementApp system <@>- * Order orders;
+  1 FashionStoreManagementApp system <@>- * AccountType accounts;
+  1 FashionStoreManagementApp system <@>- * Shipment loggedShipments;
+  1 FashionStoreManagementApp system <@>- * Address savedAddress;
 }
